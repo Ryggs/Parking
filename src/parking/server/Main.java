@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import parking.server.model.LoginDAO;
+import parking.util.DBUtil;
 
 import java.io.IOException;
 
@@ -25,7 +27,9 @@ public class Main extends Application {
         showLoginWindow();
         primaryStage.setTitle("Parking Server Login");
 
-        primaryStage.show();
+       // primaryStage.show();
+        DBUtil.dbConnect();
+        //System.out.println(LoginDAO.login());
     }
 
     public void showLoginWindow() {

@@ -1,4 +1,4 @@
-package parking.server.util;
+package parking.util;
 
 import com.sun.rowset.CachedRowSetImpl;
 
@@ -16,19 +16,20 @@ public class DBUtil {
     private static final String username = "javaparking";
     private static final String pass = "javaparking";
     private static final String ip = "localhost";
-    private static final String port = "1521";
-    private static final String sid = "orcl";
+    private static final String port = "3306";
+    private static final String sid = "javaparking";
 
     //Connection String
-    //String connStr = "jdbc:oracle:thin:Username/Password@IP:Port/SID";
-    private static final String connStr = String.format("jdbc:oracle:thin:%s/%s@%s:%s/%s", username, pass, ip, port, sid );
+    //String connStr = "jdbc:oracle:thin:Username/Password@IP:Port/SID";  - oracle
+    //       jdbc:mysql://localhost:3306/
+    private static final String connStr = String.format("jdbc:mysql://%s:%s", ip, port);
 
     // Connect to DB
     public static void dbConnect() throws SQLException {
         // setting Oracle driver
         try {
             Class.forName(JDBC_DRIVER);
-
+            System.out.println(connStr);
         } catch (ClassNotFoundException e) {
             System.err.printf("Where is your Oracle JDBC driver?");
             e.printStackTrace();
@@ -37,7 +38,7 @@ public class DBUtil {
 
         // Establish the Oracle Connection
         try {
-            conn = DriverManager.getConnection(connStr);
+            conn = DriverManager.getConnection(connStr,username,pass);
         } catch (SQLException e) {
             System.err.println("Connection failed!");
             e.printStackTrace();

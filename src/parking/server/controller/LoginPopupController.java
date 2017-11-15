@@ -33,7 +33,7 @@ public class LoginPopupController {
         username = usernameTextField.getText();
         password = passwordField.getText();
 
-          if(LoginDAO.login(username, password, 0)){
+          if(LoginDAO.login(username, password, "admin")){
 
             message.setTextFill(Color.rgb(0, 255, 0));
             message.setText("Password correct!");

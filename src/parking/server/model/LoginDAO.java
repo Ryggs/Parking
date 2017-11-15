@@ -15,14 +15,14 @@ public class LoginDAO {
      * @param
      *  username - username
      *  password - password
-     *  perm_level - premission level: 0 - admin, 1 - user;
+     *  permType - admin / user
      *int perm_level
      * @return  true - user correctly logged in
      *          false - wrong password
      */
-    public static boolean login(String username, String password, int perm_level) throws SQLException {
+    public static boolean login(String username, String password, String permType) throws SQLException {
         String selectstmt = String.format( "SELECT count(*) as 'logged' FROM javaparking.users " +
-                "WHERE login = '%s' AND password = '%s' AND perm_level = %d",username, password, perm_level);
+                "WHERE login = '%s' AND password = '%s' AND PermType = '%s'",username, password, permType);
 
         ResultSet rs = null;
         boolean isLogged = false;

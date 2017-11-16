@@ -191,4 +191,20 @@ CALL get_user_sub(2);
 
 
 
+# get cebulaki
+
+DELIMITER //
+CREATE PROCEDURE get_money(vDateFrom datetime, vDateTo datetime)
+begin
+SET @vGetMyMoneyTic = (SELECT sum(Charge) as 'MyMoney' from ticket where ticket.PaymentType = 'cash' and ticket.PaymentTime is NOT NULL and ticket.PaymentTime between vDateFrom and vDateTo);
+SET @vGetMyMoneySub = (SELECT sum(Price) as 'MyMoney' from subscription where subscription.PurchaseTime between vDateFrom and vDateTo);
+	SELECT "DONE" as "DONE" , "0" as "ErrType", "get_user_sub" as "Fun","YourMoney" as "Info", @vGetMyMoneyTic as "TicketMoney", @vGetMyMoneySub as "SubMoney", @vGetMyMoneyTic + @vGetMyMoneySub as "TotalMoney";
+end
+//
+DELIMITER ;
+
+CALL get_money("0001-01-01 00:00:00", "9999-12-31 23:59:59");
+
+
+
 

@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane fx:id="mainAnchorPane" prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.server.controller.MainMenuController">
    <children>
       <ButtonBar buttonMinWidth="50.0" layoutX="56.0" layoutY="270.0" prefHeight="200.0" prefWidth="800.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="270.0">
@@ -16,7 +15,7 @@
                   <Font size="14.0" />
                </font>
             </Button>
-            <Button minHeight="150.0" mnemonicParsing="false" text="Manage user's subscrptions ">
+            <Button minHeight="150.0" mnemonicParsing="false" onAction="#manageSubscriptions" text="Manage user's subscrptions ">
                <font>
                   <Font size="14.0" />
                </font>

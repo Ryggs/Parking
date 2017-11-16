@@ -45,6 +45,8 @@ public class RootLayoutController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        MainMenuController menuController = loader.getController();
+        menuController.setRootController(this);
         setScreen(pane);
     }
 

@@ -17,7 +17,7 @@ public class DBUtil {
     private static final String pass = "javaparking";
     private static final String ip = "localhost";
     private static final String port = "3306";
-    private static final String sid = "javaparking";
+    private static final String sid = "carpark";
 
     //Connection String
     //String connStr = "jdbc:oracle:thin:Username/Password@IP:Port/SID";  - oracle

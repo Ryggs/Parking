@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2017 at 02:27 PM
+-- Generation Time: Nov 16, 2017 at 06:31 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -59,6 +59,12 @@ if (@vUserNo is NOT NULL) then
 else
 	SELECT "ERROR" as "ERROR", "1" as "ErrType", "buy_sub" as "Fun", "This login is not correct. Subscription hasn't been added" as "Info";
 end if;
+end$$
+
+CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `get_money` (`vDateFrom` DATETIME, `vDateTo` DATETIME)  begin
+SET @vGetMyMoneyTic = (SELECT sum(Charge) as 'MyMoney' from ticket where ticket.PaymentType = 'cash' and ticket.PaymentTime is NOT NULL and ticket.PaymentTime between vDateFrom and vDateTo);
+SET @vGetMyMoneySub = (SELECT sum(Price) as 'MyMoney' from subscription where subscription.PurchaseTime between vDateFrom and vDateTo);
+	SELECT "DONE" as "DONE" , "0" as "ErrType", "get_user_sub" as "Fun","YourMoney" as "Info", @vGetMyMoneyTic as "TicketMoney", @vGetMyMoneySub as "SubMoney", @vGetMyMoneyTic + @vGetMyMoneySub as "TotalMoney";
 end$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_ticket` ()  begin
@@ -234,7 +240,7 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`UserNo`, `UserLogin`, `UserPass`, `PermType`, `Name`, `Surname`, `Phone`, `Email`) VALUES
 (1, 'admin', 'admin', 'admin', 'Admin', 'Admin', 660770880, 'admin@sql.com'),
-(2, 'javapark', 'javapark', 'admin', 'Java', 'Park', 999999999, 'Java@Park.com'),
+(2, 'javaparking', 'javaparking', 'admin', 'Java', 'Park', 999999999, 'Java@Park.com'),
 (3, 'Klos', 'Labs', 'user', 'Klos', 'Labs', 111222333, 'vip@kk');
 
 -- --------------------------------------------------------
@@ -330,7 +336,7 @@ ALTER TABLE `prices`
 -- AUTO_INCREMENT for table `subscription`
 --
 ALTER TABLE `subscription`
-  MODIFY `SubNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `SubNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `ticket`

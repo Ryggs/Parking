@@ -3,14 +3,9 @@ package parking.server.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
-import parking.server.Main;
-
-import java.awt.*;
 import java.io.IOException;
 
 
@@ -33,18 +28,27 @@ public class RootLayoutController {
         appStage.setScene(scene);
         appStage.setTitle("Parking Server");
         appStage.show();
-
-
-//        System.out.println("center test: "+borderPane.getChildren());
-
-
-        StackPane test = new StackPane();
-        test.setStyle("-fx-background-color: rgba(100, 0, 0, 1);");
-        test.setPrefSize(1024,768);
-        setScreen(test);
-
+        loadMainMenuScreen();
 
     }
+
+
+
+
+
+    public void loadMainMenuScreen() {
+        FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../view/MainMenuPane.fxml"));
+        System.out.println(this.getClass().getResource("../view/MainMenuPane.fxml"));
+        AnchorPane pane = null;
+        try {
+            pane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setScreen(pane);
+    }
+
+
 
 
     /**
@@ -56,6 +60,10 @@ public class RootLayoutController {
         borderPane.setCenter(pane);
 
 
+    }
+
+    public RootLayoutController getController(){
+        return this;
     }
 
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2017 at 01:10 AM
+-- Generation Time: Nov 16, 2017 at 02:27 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -31,23 +31,31 @@ SET @vUserNo = (SELECT UserNo from user where UserLogin = vLogin);
 if (@vUserNo is NOT NULL) then
 	SET @vSubNo = (SELECT max(SubNo) from subscription) + 1; #Search new subscription number (SubNo)
 	if(vType = '30days') then
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 30 DAY);
+		SET @vEndTime = DATE(DATE_ADD(vStartTime, INTERVAL 31 DAY));
+		SET @vPrice = (SELECT prices.Price from prices where prices.Type = 'sub30days');
 	elseif(vType = '90days') then
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 90 DAY);
+		SET @vEndTime = DATE(DATE_ADD(vStartTime, INTERVAL 91 DAY));
+		SET @vPrice = (SELECT prices.Price from prices where prices.Type = 'sub90days');
 	elseif(vType = '180days')then
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 180 DAY);		
+		SET @vEndTime = DATE(DATE_ADD(vStartTime, INTERVAL 181 DAY));	
+		SET @vPrice = (SELECT prices.Price from prices where prices.Type = 'sub180days');		
 	elseif(vType = '1year')then
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 1 YEAR);	
+		SET @vEndTime = DATE(DATE_ADD(vStartTime, INTERVAL 1 YEAR));	
+		SET @vPrice = (SELECT prices.Price from prices where prices.Type = 'sub1year');
 	elseif(vType = 'unlimited')then
 		SET @vEndTime = "9999-12-31 23:59:59";
-	else
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 30 DAY);	#else 30days
+		SET @vPrice = 0;
 	end if;
 	
-	INSERT INTO subscription(SubNo, StartTime, EndTime, PurchaseTime, Type) VALUES(@vSubNo, vStartTime, @vEndTime, NOW(), vType );
-	INSERT INTO user_sub(UserNo, SubNo) VALUES(@vUserNo, @vSubNo);
-	
-	SELECT "DONE" as "DONE" , "0" as "ErrType", "buy_sub" as "Fun","Subscription added correctly" as "Info";
+	if(@vPrice is NOT NULL) then
+		if(@vEndTime is NOT NULL) then
+			INSERT INTO subscription(SubNo, StartTime, EndTime, PurchaseTime, Type, Price) VALUES(@vSubNo, vStartTime, @vEndTime, NOW(), vType, @vPrice );
+			INSERT INTO user_sub(UserNo, SubNo) VALUES(@vUserNo, @vSubNo);
+			SELECT "DONE" as "DONE" , "0" as "ErrType", "buy_sub" as "Fun","Subscription added correctly" as "Info";
+		end if;
+	else
+		SELECT "ERROR" as "ERROR", "1" as "ErrType", "buy_sub" as "Fun", "Incorrect type of subscription. Subscription hasn't been added" as "Info";
+	end if;
 else
 	SELECT "ERROR" as "ERROR", "1" as "ErrType", "buy_sub" as "Fun", "This login is not correct. Subscription hasn't been added" as "Info";
 end if;
@@ -62,6 +70,17 @@ SELECT "DONE" as "DONE" , "0" as "ErrType", "get_ticket" as "Fun","New Ticket ad
 
 end$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_sub` (`vUserNo` INT)  begin
+SET @vNow = Now();
+SET @vSubNo = (SELECT SubNo from subscription natural join user_sub where UserNo = vUserNo and Now() between subscription.StartTime and subscription.EndTime);
+if (@vSubNo is NOT NULL) then
+	SELECT "DONE" as "DONE" , "0" as "ErrType", "get_user_sub" as "Fun","This user have active subscription" as "Info", @vSubNo as "SubNo";
+else
+	SELECT "ERROR" as "ERROR", "1" as "ErrType", "get_user_sub" as "Fun", "This user has no active subscription or user incorrect" as "Info";
+end if;
+
+end$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `new_user` (`newLogin` VARCHAR(50), `newPass` VARCHAR(50), `newPermType` ENUM('admin','user'), `newName` VARCHAR(50), `newSurname` VARCHAR(50), `newPhone` INT(9), `newEmail` VARCHAR(50))  begin
 SET @n1 = (SELECT max(UserNo) from user) + 1; #Search new user number (UserNo)
 SET @n2 = (SELECT UserNo from user where UserLogin = newLogin);
@@ -70,6 +89,54 @@ if (@n2 is NULL) then
 	SELECT "DONE" as "DONE" , "0" as "ErrType", "new_user" as "Fun","User added correctly" as "Info";
 else
 	SELECT "ERROR" as "ERROR", "1" as "ErrType", "new_user" as "Fun", "This login is in use. User hasn't been added" as "Info";
+end if;
+end$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `pay_ticket` (`vTicketNo` INT, `vPaymentType` ENUM('cash','subscription'), `vSubNo` INT)  begin
+SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
+if (@vEntryTime is NOT NULL) then
+	SET @vNow = Now();
+	if(vPaymentType = 'cash') then
+		UPDATE ticket SET PaymentType='cash' WHERE ticket.TicketNo = vTicketNo;
+		UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+		SELECT "DONE" as "DONE" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+	elseif(vPaymentType = 'subscription') then
+		SET @vUserNo = (SELECT UserNo from user_sub where user_sub.SubNo = vSubNo);
+		if(@vUserNo is NOT NULL) then
+		
+			#TODO ERROR This user used his subscription to pay for another ticket at the same time // zabezpieczenie przeciwcebulowe
+		
+		
+			INSERT INTO user_ticket(TicketNo, UserNo) VALUES(vTicketNo, @vUserNo);
+			UPDATE ticket SET PaymentType='subscription' WHERE ticket.TicketNo = vTicketNo;
+			UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+			SELECT "DONE" as "DONE" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+		else
+			SELECT "ERROR" as "ERROR", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
+		end if;
+	else
+		SELECT "ERROR" as "ERROR", "1" as "ErrType", "pay_ticket" as "Fun", "This PaymentType is not correct. Ticket hasn't been paid" as "Info";
+	end if;
+else
+	SELECT "ERROR" as "ERROR", "1" as "ErrType", "pay_ticket" as "Fun", "This TicketNo is not correct. Ticket hasn't been paid" as "Info";
+end if;
+end$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `set_ticket_charge` (`vTicketNo` INT)  begin
+SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
+if (@vEntryTime is NOT NULL) then
+	SET @vNow = Now();
+	SET @vDuration = (SELECT ((HOUR(TIMEDIFF(@vNow, @vEntryTime)) + 1)));
+	SET @vPriceHour = (SELECT prices.Price from prices where prices.Type = 'hour1');
+	if( @vPriceHour is NOT NULL) then
+		SET @vCharge = @vDuration * @vPriceHour;
+		UPDATE ticket SET Charge=@vCharge WHERE ticket.TicketNo = vTicketNo;
+		SELECT "DONE" as "DONE" , "0" as "ErrType", "set_ticket_charge" as "Fun","Ticket charge added correctly" as "Info", @vCharge as "TicketCharge", @vDuration as "DurationTime";
+	else
+		SELECT "ERROR" as "ERROR", "1" as "ErrType", "set_ticket_charge" as "Fun", "There is no price hour1 in table price. Charge hasn't been added" as "Info";	
+	end if;
+else
+	SELECT "ERROR" as "ERROR", "1" as "ErrType", "set_ticket_charge" as "Fun", "This TicketNo is not correct. Charge hasn't been added" as "Info";
 end if;
 end$$
 
@@ -109,17 +176,17 @@ CREATE TABLE `subscription` (
   `StartTime` datetime NOT NULL,
   `EndTime` datetime NOT NULL,
   `PurchaseTime` datetime NOT NULL,
-  `Type` enum('30days','90days','180days','1year','unlimited') COLLATE utf8_unicode_ci NOT NULL
+  `Type` enum('30days','90days','180days','1year','unlimited') COLLATE utf8_unicode_ci NOT NULL,
+  `Price` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `subscription`
 --
 
-INSERT INTO `subscription` (`SubNo`, `StartTime`, `EndTime`, `PurchaseTime`, `Type`) VALUES
-(1, '2017-01-01 00:00:00', '2017-01-01 00:00:00', '2017-01-01 00:00:00', 'unlimited'),
-(2, '2017-01-01 00:00:00', '2017-01-01 00:00:00', '2017-01-01 00:00:00', 'unlimited'),
-(5, '2017-11-16 12:30:30', '2018-02-14 12:30:30', '2017-11-16 01:09:29', '90days');
+INSERT INTO `subscription` (`SubNo`, `StartTime`, `EndTime`, `PurchaseTime`, `Type`, `Price`) VALUES
+(1, '0001-01-01 00:00:00', '9999-12-31 23:59:59', '2017-01-01 00:00:00', 'unlimited', 0),
+(2, '0001-01-01 00:00:00', '9999-12-31 23:59:59', '2017-01-01 00:00:00', 'unlimited', 0);
 
 -- --------------------------------------------------------
 
@@ -141,8 +208,8 @@ CREATE TABLE `ticket` (
 --
 
 INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `PaymentType`, `Charge`) VALUES
-(1, '2017-11-15 09:00:00', NULL, NULL, NULL, NULL),
-(2, '2017-11-16 01:02:51', NULL, NULL, NULL, NULL);
+(1, '2017-11-15 09:00:00', NULL, '2017-11-16 13:43:05', 'cash', 8700),
+(2, '2017-11-16 01:02:51', NULL, '2017-11-16 14:17:35', 'cash', 3900);
 
 -- --------------------------------------------------------
 
@@ -187,8 +254,7 @@ CREATE TABLE `user_sub` (
 
 INSERT INTO `user_sub` (`UserNo`, `SubNo`) VALUES
 (1, 1),
-(2, 2),
-(3, 5);
+(2, 2);
 
 -- --------------------------------------------------------
 
@@ -200,6 +266,13 @@ CREATE TABLE `user_ticket` (
   `UserNo` int(11) NOT NULL,
   `TicketNo` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `user_ticket`
+--
+
+INSERT INTO `user_ticket` (`UserNo`, `TicketNo`) VALUES
+(1, 2);
 
 --
 -- Indexes for dumped tables
@@ -257,7 +330,7 @@ ALTER TABLE `prices`
 -- AUTO_INCREMENT for table `subscription`
 --
 ALTER TABLE `subscription`
-  MODIFY `SubNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `SubNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `ticket`

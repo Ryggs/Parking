@@ -1,4 +1,4 @@
-CREATE TABLE `CarPark`.`Ticket` ( `TicketNo` INT NOT NULL AUTO_INCREMENT , `EntryTime` DATE NOT NULL , `LeaveTime` DATE NULL DEFAULT NULL , `PaymentTime` DATE NULL DEFAULT NULL , `PaymentType` ENUM('cash','subscription') NULL DEFAULT NULL , `Charge` INT NULL DEFAULT NULL , PRIMARY KEY (`TicketNo`)) ENGINE = InnoDB;
+﻿CREATE TABLE `CarPark`.`Ticket` ( `TicketNo` INT NOT NULL AUTO_INCREMENT , `EntryTime` DATE NOT NULL , `LeaveTime` DATE NULL DEFAULT NULL , `PaymentTime` DATE NULL DEFAULT NULL , `PaymentType` ENUM('cash','subscription') NULL DEFAULT NULL , `Charge` INT NULL DEFAULT NULL , PRIMARY KEY (`TicketNo`)) ENGINE = InnoDB;
 
 CREATE TABLE `carpark`.`customer` ( `CustNo` INT NOT NULL AUTO_INCREMENT , `Name` VARCHAR(50) NOT NULL , `Surname` VARCHAR(50) NOT NULL , `Login` VARCHAR(50) NOT NULL , `Password` VARCHAR(50) NOT NULL , `Phone` INT(9) NULL , `Email` VARCHAR(50) NULL , PRIMARY KEY (`CustNo`)) ENGINE = InnoDB;
 

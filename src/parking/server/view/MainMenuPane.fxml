@@ -10,22 +10,22 @@
    <children>
       <ButtonBar buttonMinWidth="50.0" layoutX="56.0" layoutY="270.0" prefHeight="200.0" prefWidth="800.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="270.0">
         <buttons>
-            <Button minHeight="150.0" mnemonicParsing="false" text="Edit prices">
+            <Button minHeight="150.0" mnemonicParsing="false" onAction="#editPrices" text="Edit prices" textAlignment="CENTER">
                <font>
                   <Font size="14.0" />
                </font>
             </Button>
-            <Button minHeight="150.0" mnemonicParsing="false" onAction="#manageSubscriptions" text="Manage user's subscrptions ">
+            <Button minHeight="150.0" mnemonicParsing="false" onAction="#manageSubscriptions" text="Manage user's subscrptions " textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="14.0" />
                </font>
             </Button>
-          <Button minHeight="150.0" mnemonicParsing="false" text="Show parking log">
+          <Button minHeight="150.0" mnemonicParsing="false" onAction="#showParkingLog" text="Show parking log" textAlignment="CENTER">
                <font>
                   <Font size="14.0" />
                </font>
             </Button>
-            <Button minHeight="150.0" mnemonicParsing="false" text="Manage admins">
+            <Button minHeight="150.0" mnemonicParsing="false" onAction="#manageAdmins" text="Manage admins" textAlignment="CENTER">
                <font>
                   <Font size="14.0" />
                </font>

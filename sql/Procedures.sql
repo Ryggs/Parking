@@ -50,23 +50,31 @@ SET @vUserNo = (SELECT UserNo from user where UserLogin = vLogin);
 if (@vUserNo is NOT NULL) then
 	SET @vSubNo = (SELECT max(SubNo) from subscription) + 1; #Search new subscription number (SubNo)
 	if(vType = '30days') then
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 30 DAY);
+		SET @vEndTime = DATE(DATE_ADD(vStartTime, INTERVAL 31 DAY));
+		SET @vPrice = (SELECT prices.Price from prices where prices.Type = 'sub30days');
 	elseif(vType = '90days') then
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 90 DAY);
+		SET @vEndTime = DATE(DATE_ADD(vStartTime, INTERVAL 91 DAY));
+		SET @vPrice = (SELECT prices.Price from prices where prices.Type = 'sub90days');
 	elseif(vType = '180days')then
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 180 DAY);		
+		SET @vEndTime = DATE(DATE_ADD(vStartTime, INTERVAL 181 DAY));	
+		SET @vPrice = (SELECT prices.Price from prices where prices.Type = 'sub180days');		
 	elseif(vType = '1year')then
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 1 YEAR);	
+		SET @vEndTime = DATE(DATE_ADD(vStartTime, INTERVAL 1 YEAR));	
+		SET @vPrice = (SELECT prices.Price from prices where prices.Type = 'sub1year');
 	elseif(vType = 'unlimited')then
 		SET @vEndTime = "9999-12-31 23:59:59";
-	else
-		SET @vEndTime = DATE_ADD(vStartTime, INTERVAL 30 DAY);	#else 30days
+		SET @vPrice = 0;
 	end if;
 	
-	INSERT INTO subscription(SubNo, StartTime, EndTime, PurchaseTime, Type) VALUES(@vSubNo, vStartTime, @vEndTime, NOW(), vType );
-	INSERT INTO user_sub(UserNo, SubNo) VALUES(@vUserNo, @vSubNo);
-	
-	SELECT "DONE" as "DONE" , "0" as "ErrType", "buy_sub" as "Fun","Subscription added correctly" as "Info";
+	if(@vPrice is NOT NULL) then
+		if(@vEndTime is NOT NULL) then
+			INSERT INTO subscription(SubNo, StartTime, EndTime, PurchaseTime, Type, Price) VALUES(@vSubNo, vStartTime, @vEndTime, NOW(), vType, @vPrice );
+			INSERT INTO user_sub(UserNo, SubNo) VALUES(@vUserNo, @vSubNo);
+			SELECT "DONE" as "DONE" , "0" as "ErrType", "buy_sub" as "Fun","Subscription added correctly" as "Info";
+		end if;
+	else
+		SELECT "ERROR" as "ERROR", "1" as "ErrType", "buy_sub" as "Fun", "Incorrect type of subscription. Subscription hasn't been added" as "Info";
+	end if;
 else
 	SELECT "ERROR" as "ERROR", "1" as "ErrType", "buy_sub" as "Fun", "This login is not correct. Subscription hasn't been added" as "Info";
 end if;
@@ -93,6 +101,93 @@ DELIMITER ;
 
 CALL get_ticket();
 
+
+# set ticket value
+
+DELIMITER //
+CREATE PROCEDURE set_ticket_charge(vTicketNo int)
+begin
+SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
+if (@vEntryTime is NOT NULL) then
+	SET @vNow = Now();
+	SET @vDuration = (SELECT ((HOUR(TIMEDIFF(@vNow, @vEntryTime)) + 1)));
+	SET @vPriceHour = (SELECT prices.Price from prices where prices.Type = 'hour1');
+	
+	#TODO Check if ticket was paid to avoid paying again
+	
+	if( @vPriceHour is NOT NULL) then
+		SET @vCharge = @vDuration * @vPriceHour;
+		UPDATE ticket SET Charge=@vCharge WHERE ticket.TicketNo = vTicketNo;
+		SELECT "DONE" as "DONE" , "0" as "ErrType", "set_ticket_charge" as "Fun","Ticket charge added correctly" as "Info", @vCharge as "TicketCharge", @vDuration as "DurationTime";
+	else
+		SELECT "ERROR" as "ERROR", "1" as "ErrType", "set_ticket_charge" as "Fun", "There is no price hour1 in table price. Charge hasn't been added" as "Info";	
+	end if;
+else
+	SELECT "ERROR" as "ERROR", "1" as "ErrType", "set_ticket_charge" as "Fun", "This TicketNo is not correct. Charge hasn't been added" as "Info";
+end if;
+end
+//
+DELIMITER ;
+
+CALL set_ticket_charge(1);
+
+# pay for ticket	vSubNo int can be just 0 if there is no subscription payment type
+
+DELIMITER //
+CREATE PROCEDURE pay_ticket(vTicketNo int, vPaymentType enum('cash', 'subscription'), vSubNo int)
+begin
+SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
+if (@vEntryTime is NOT NULL) then
+	SET @vNow = Now();
+	if(vPaymentType = 'cash') then
+		UPDATE ticket SET PaymentType='cash' WHERE ticket.TicketNo = vTicketNo;
+		UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+		SELECT "DONE" as "DONE" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+	elseif(vPaymentType = 'subscription') then
+		SET @vUserNo = (SELECT UserNo from user_sub where user_sub.SubNo = vSubNo);
+		if(@vUserNo is NOT NULL) then
+		
+			#TODO ERROR This user used his subscription to pay for another ticket at the same time // zabezpieczenie przeciwcebulowe
+		
+		
+			INSERT INTO user_ticket(TicketNo, UserNo) VALUES(vTicketNo, @vUserNo);
+			UPDATE ticket SET PaymentType='subscription' WHERE ticket.TicketNo = vTicketNo;
+			UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+			SELECT "DONE" as "DONE" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+		else
+			SELECT "ERROR" as "ERROR", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
+		end if;
+	else
+		SELECT "ERROR" as "ERROR", "1" as "ErrType", "pay_ticket" as "Fun", "This PaymentType is not correct. Ticket hasn't been paid" as "Info";
+	end if;
+else
+	SELECT "ERROR" as "ERROR", "1" as "ErrType", "pay_ticket" as "Fun", "This TicketNo is not correct. Ticket hasn't been paid" as "Info";
+end if;
+end
+//
+DELIMITER ;
+
+CALL pay_ticket(2, 'cash', 0);
+
+
+# check if user have active subscription
+
+DELIMITER //
+CREATE PROCEDURE get_user_sub(vUserNo int)
+begin
+SET @vNow = Now();
+SET @vSubNo = (SELECT SubNo from subscription natural join user_sub where UserNo = vUserNo and Now() between subscription.StartTime and subscription.EndTime);
+if (@vSubNo is NOT NULL) then
+	SELECT "DONE" as "DONE" , "0" as "ErrType", "get_user_sub" as "Fun","This user have active subscription" as "Info", @vSubNo as "SubNo";
+else
+	SELECT "ERROR" as "ERROR", "1" as "ErrType", "get_user_sub" as "Fun", "This user has no active subscription or user incorrect" as "Info";
+end if;
+
+end
+//
+DELIMITER ;
+
+CALL get_user_sub(2);
 
 
 

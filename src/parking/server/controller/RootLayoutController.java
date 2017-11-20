@@ -1,12 +1,16 @@
 package parking.server.controller;
 
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuBar;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.ResourceBundle;
 //import parking.server.bundles.*;
 
@@ -14,18 +18,29 @@ import java.util.ResourceBundle;
 public class RootLayoutController {
 
     @FXML
+    private MenuBar menuBar;
+
+    private FXMLLoader rootLoader;
+    private ResourceBundle bundle;
+
+    public RootLayoutController() {
+        rootLoader = new FXMLLoader();
+        bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
+        rootLoader.setResources(bundle);
+    }
+
+
+    @FXML
     private BorderPane borderPane;
 
 
     public void startApp() throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        ResourceBundle bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
-        loader.setResources(bundle);
+
 
 //        System.out.println("Res: " + getClass().getResource("../view/RootLayout.fxml"));
-        loader.setLocation(getClass().getResource("../view/RootLayout.fxml"));
+        rootLoader.setLocation(getClass().getResource("../view/RootLayout.fxml"));
 
-        borderPane = loader.load();
+        borderPane = rootLoader.load();
 
         Stage appStage = new Stage();
         Scene scene = new Scene(borderPane);
@@ -56,7 +71,26 @@ public class RootLayoutController {
         setScreen(pane);
     }
 
+    @FXML
+    void setLocalePolish(ActionEvent event) throws IOException {
+        Locale.setDefault(new Locale("pl"));
+        System.out.println(Locale.getDefault());
+        // Close window
+        ((Node) menuBar).getScene().getWindow().hide();
+        startApp();
+    }
 
+    @FXML
+    void setLocaleEnglish(ActionEvent event) throws IOException {
+        Locale.setDefault(new Locale("en"));
+        System.out.println(Locale.getDefault());
+        // Close window
+
+
+        ((Node) menuBar).getScene().getWindow().hide();
+        startApp();
+
+    }
 
 
     /**

@@ -2,6 +2,7 @@ package parking.server;
 
 import javafx.application.Application;
 
+import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import parking.server.controller.LoginPopupController;
 import parking.util.DBUtil;

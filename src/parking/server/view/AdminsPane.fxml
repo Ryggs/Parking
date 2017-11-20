@@ -2,11 +2,20 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.server.controller.AdminsPaneController">
     <children>
         <Label layoutX="151.0" layoutY="107.0" text="Admin users management will be here" />
-        <Button layoutX="287.0" layoutY="488.0" mnemonicParsing="false" onAction="#backToMenu" text="Back to menu" />
+        <Button layoutX="287.0" layoutY="488.0" mnemonicParsing="false" onAction="#backToMenu" text="%app.backToMenu" />
+      <TableView fx:id="AdminsTableView" layoutX="118.0" layoutY="150.0" prefHeight="200.0" prefWidth="264.0">
+        <columns>
+          <TableColumn fx:id="loginColumn" prefWidth="75.0" text="login" />
+          <TableColumn fx:id="passwordColumn" prefWidth="75.0" text="hasło" />
+            <TableColumn fx:id="privilegeColumn" prefWidth="75.0" text="uprawnienia" />
+        </columns>
+      </TableView>
     </children>
 </AnchorPane>

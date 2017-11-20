@@ -10,33 +10,33 @@
    <children>
       <ButtonBar buttonMinWidth="50.0" layoutX="56.0" layoutY="270.0" prefHeight="200.0" prefWidth="800.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="270.0">
         <buttons>
-            <Button minHeight="150.0" mnemonicParsing="false" onAction="#editPrices" text="Edit prices" textAlignment="CENTER">
+            <Button minHeight="150.0" mnemonicParsing="false" onAction="#editPrices" text="%menu.editPrices" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="14.0" />
                </font>
             </Button>
-            <Button minHeight="150.0" mnemonicParsing="false" onAction="#manageSubscriptions" text="Manage user's subscriptions " textAlignment="CENTER" wrapText="true">
+            <Button minHeight="150.0" mnemonicParsing="false" onAction="#manageSubscriptions" text="%menu.manageSubscriptions" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="14.0" />
                </font>
             </Button>
-          <Button minHeight="150.0" mnemonicParsing="false" onAction="#showParkingLog" text="Show parking log" textAlignment="CENTER">
+          <Button minHeight="150.0" mnemonicParsing="false" onAction="#showParkingLog" text="%menu.showLog" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="14.0" />
                </font>
             </Button>
-            <Button minHeight="150.0" mnemonicParsing="false" onAction="#manageAdmins" text="Manage admins" textAlignment="CENTER">
+            <Button minHeight="150.0" mnemonicParsing="false" onAction="#manageAdmins" text="%menu.manageAdmins" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font size="14.0" />
                </font>
             </Button>
         </buttons>
       </ButtonBar>
-      <Label layoutX="73.0" layoutY="52.0" text="Parking management system" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="50.0">
+      <Label layoutX="73.0" layoutY="52.0" text="%menu.title" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="50.0">
          <font>
             <Font size="36.0" />
          </font>
       </Label>
-      <Button layoutX="769.0" layoutY="54.0" mnemonicParsing="false" onAction="#logout" text="Logout" />
+      <Button layoutX="769.0" layoutY="54.0" mnemonicParsing="false" onAction="#logout" text="%app.logout" />
    </children>
 </AnchorPane>

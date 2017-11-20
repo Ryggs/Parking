@@ -7,6 +7,6 @@
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.server.controller.PricesPaneController">
    <children>
       <Label layoutX="151.0" layoutY="107.0" text="Editing prices will be here" />
-      <Button layoutX="287.0" layoutY="488.0" mnemonicParsing="false" onAction="#backToMenu" text="Back to menu" />
+      <Button layoutX="287.0" layoutY="488.0" mnemonicParsing="false" onAction="#backToMenu" text="%app.backToMenu" />
    </children>
 </AnchorPane>

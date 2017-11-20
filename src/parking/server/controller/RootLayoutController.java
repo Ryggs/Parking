@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.ResourceBundle;
+//import parking.server.bundles.*;
 
 
 public class RootLayoutController {
@@ -15,9 +17,11 @@ public class RootLayoutController {
     private BorderPane borderPane;
 
 
-
     public void startApp() throws IOException {
         FXMLLoader loader = new FXMLLoader();
+        ResourceBundle bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
+        loader.setResources(bundle);
+
 //        System.out.println("Res: " + getClass().getResource("../view/RootLayout.fxml"));
         loader.setLocation(getClass().getResource("../view/RootLayout.fxml"));
 
@@ -26,7 +30,7 @@ public class RootLayoutController {
         Stage appStage = new Stage();
         Scene scene = new Scene(borderPane);
         appStage.setScene(scene);
-        appStage.setTitle("Parking Server");
+        appStage.setTitle(bundle.getString("title.application"));
         appStage.show();
         loadMainMenuScreen();
 
@@ -38,7 +42,9 @@ public class RootLayoutController {
 
     public void loadMainMenuScreen() {
         FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../view/MainMenuPane.fxml"));
-        System.out.println(this.getClass().getResource("../view/MainMenuPane.fxml"));
+        ResourceBundle bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
+        loader.setResources(bundle);
+        //System.out.println(this.getClass().getResource("../view/MainMenuPane.fxml"));
         AnchorPane pane = null;
         try {
             pane = loader.load();

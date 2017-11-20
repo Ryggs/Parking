@@ -10,7 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
+import java.util.ResourceBundle;
 
 
 public class MainMenuController {
@@ -21,6 +21,8 @@ public class MainMenuController {
     @FXML
     void editPrices(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../view/PricesPane.fxml"));
+        ResourceBundle bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
+        loader.setResources(bundle);
         System.out.println(this.getClass().getResource("../view/PricesPane.fxml"));
         Pane pane = null;
 
@@ -49,7 +51,8 @@ public class MainMenuController {
     @FXML
     void manageAdmins(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../view/AdminsPane.fxml"));
-
+        ResourceBundle bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
+        loader.setResources(bundle);
         Pane pane = null;
 
         try {
@@ -67,7 +70,8 @@ public class MainMenuController {
     @FXML
     void manageSubscriptions(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../view/SubscriptionsPane.fxml"));
-
+        ResourceBundle bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
+        loader.setResources(bundle);
         Pane pane = null;
 
         try {
@@ -85,7 +89,9 @@ public class MainMenuController {
     @FXML
     void showParkingLog(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../view/LogPane.fxml"));
-
+        ResourceBundle bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
+        loader.setResources(bundle);
+        System.out.println(loader.getResources());
         Pane pane = null;
 
         try {

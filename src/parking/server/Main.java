@@ -6,6 +6,8 @@ import javafx.stage.Stage;
 import parking.server.controller.LoginPopupController;
 import parking.util.DBUtil;
 
+import java.util.Locale;
+
 
 public class Main extends Application {
 
@@ -16,7 +18,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage loginStage) throws Exception {
-
+       // Locale.setDefault(new Locale("en"));
+       // Locale.setDefault(new Locale("pl"));
         LoginPopupController loginInstance = new LoginPopupController();
 
         loginInstance.showLoginWindow(loginStage);

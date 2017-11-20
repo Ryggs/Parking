@@ -10,14 +10,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import parking.server.Main;
 import parking.server.model.LoginDAO;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
 
 
 public class LoginPopupController {
@@ -36,12 +35,20 @@ public class LoginPopupController {
     private String username;
     private String password;
 
+    private ResourceBundle bundle;
+    private FXMLLoader loader;
 
     private Stage loginStage;
 
     private AnchorPane loginLayout;
 
-
+    public LoginPopupController() {
+        // Init login layout
+        loader = new FXMLLoader();
+        bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
+        loader.setLocation(this.getClass().getResource("../view/LoginPopup.fxml"));
+        loader.setResources(bundle);
+    }
 
     @FXML
     public void login(ActionEvent event) throws SQLException {
@@ -52,7 +59,7 @@ public class LoginPopupController {
           if(LoginDAO.login(username, password, "admin")){
 
             message.setTextFill(Color.rgb(0, 255, 0));
-            message.setText("Password correct!");
+            message.setText(bundle.getString("login.password.correct"));
 
               // Start  application, if logged
               RootLayoutController appInstance = new RootLayoutController();
@@ -71,21 +78,19 @@ public class LoginPopupController {
           } else {
 
             message.setTextFill(Color.rgb(255, 0, 0));
-            message.setText("Password incorrect!");
+            message.setText(bundle.getString("login.password.incorrect"));
+              System.out.println(loader.getResources());
             usernameTextField.clear();
             passwordField.clear();
 
         }
     }
 
+
     public void showLoginWindow(Stage loginStage) {
         try {
             this.loginStage = loginStage;
-            loginStage.setTitle("Parking Server Login");
-
-            // Init login layout
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(this.getClass().getResource("../view/LoginPopup.fxml"));
+            loginStage.setTitle(bundle.getString("title.login"));
             loginLayout = loader.load();
 
             // Show the scene

@@ -1,6 +1,7 @@
 package parking.server.controller;
 
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -109,5 +110,8 @@ public class RootLayoutController {
     }
 
 
-
+    public void closeApplication(ActionEvent actionEvent) {
+        Platform.exit();
+        System.exit(0);
+    }
 }

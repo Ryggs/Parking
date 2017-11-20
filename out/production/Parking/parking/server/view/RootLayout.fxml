@@ -11,7 +11,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="%menuBar.file">
             <items>
-              <MenuItem mnemonicParsing="false" text="%menuBar.close" />
+              <MenuItem mnemonicParsing="false" onAction="#closeApplication" text="%menuBar.close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="%menuBar.options">

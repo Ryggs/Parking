@@ -1,12 +1,14 @@
 package parking.server.controller;
 
 
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -43,6 +45,7 @@ public class RootLayoutController {
 
         borderPane = rootLoader.load();
 
+        System.out.println(borderPane.getChildren());
         Stage appStage = new Stage();
         Scene scene = new Scene(borderPane);
         appStage.setScene(scene);
@@ -109,9 +112,27 @@ public class RootLayoutController {
         return this;
     }
 
-
-    public void closeApplication(ActionEvent actionEvent) {
+    @FXML
+    public void closeApplication() {
         Platform.exit();
         System.exit(0);
+    }
+
+    @FXML
+    public void setModenaStyle() {
+        Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+    }
+
+    @FXML
+    public void setCaspianStyle() {
+        Application.setUserAgentStylesheet(Application.STYLESHEET_CASPIAN);
+    }
+
+    @FXML
+    public void setAlwaysOnTop(ActionEvent actionEvent) {
+        boolean check = ((CheckMenuItem)actionEvent.getSource()).selectedProperty().get();
+        Stage currStage = (Stage) borderPane.getScene().getWindow();
+        currStage.setAlwaysOnTop(check);
+
     }
 }

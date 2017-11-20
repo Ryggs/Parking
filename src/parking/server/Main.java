@@ -19,7 +19,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage loginStage) throws Exception {
-       // Locale.setDefault(new Locale("en"));
+        Locale.setDefault(new Locale("en"));
        // Locale.setDefault(new Locale("pl"));
         LoginPopupController loginInstance = new LoginPopupController();
 

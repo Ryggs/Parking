@@ -21,7 +21,7 @@ public class LoginDAO {
      *          false - wrong password
      */
     public static boolean login(String username, String password, String permType) throws SQLException {
-        String selectstmt = String.format( "SELECT count(*) as 'logged' FROM carpark.user " +
+        String selectstmt = String.format( "SELECT count(*) as 'logged' FROM carpark.userparking " +
                 "WHERE UserLogin = '%s' AND UserPass = '%s' AND PermType = '%s'",username, password, permType);
 
         ResultSet rs = null;

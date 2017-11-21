@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2017 at 06:31 PM
+-- Generation Time: Nov 21, 2017 at 10:20 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -26,8 +26,8 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `buy_sub` (`vLogin` VARCHAR(50), `vType` ENUM('30days','90days','180days','1year','unlimited'), `vStartTime` DATETIME)  begin
-SET @vUserNo = (SELECT UserNo from user where UserLogin = vLogin);
+CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `buy_sub` (`vLogin` VARCHAR(50), `vType` ENUM('30days','90days','180days','1year','unlimited'), `vStartTime` DATETIME)  begin
+SET @vUserNo = (SELECT UserNo from userparking where UserLogin = vLogin);
 if (@vUserNo is NOT NULL) then
 	SET @vSubNo = (SELECT max(SubNo) from subscription) + 1; #Search new subscription number (SubNo)
 	if(vType = '30days') then
@@ -51,61 +51,61 @@ if (@vUserNo is NOT NULL) then
 		if(@vEndTime is NOT NULL) then
 			INSERT INTO subscription(SubNo, StartTime, EndTime, PurchaseTime, Type, Price) VALUES(@vSubNo, vStartTime, @vEndTime, NOW(), vType, @vPrice );
 			INSERT INTO user_sub(UserNo, SubNo) VALUES(@vUserNo, @vSubNo);
-			SELECT "DONE" as "DONE" , "0" as "ErrType", "buy_sub" as "Fun","Subscription added correctly" as "Info";
+			SELECT "DONE" as "Status" , "0" as "ErrType", "buy_sub" as "Fun","Subscription added correctly" as "Info";
 		end if;
 	else
-		SELECT "ERROR" as "ERROR", "1" as "ErrType", "buy_sub" as "Fun", "Incorrect type of subscription. Subscription hasn't been added" as "Info";
+		SELECT "ERROR" as "Status", "1" as "ErrType", "buy_sub" as "Fun", "Incorrect type of subscription. Subscription hasn't been added" as "Info";
 	end if;
 else
-	SELECT "ERROR" as "ERROR", "1" as "ErrType", "buy_sub" as "Fun", "This login is not correct. Subscription hasn't been added" as "Info";
+	SELECT "ERROR" as "Status", "1" as "ErrType", "buy_sub" as "Fun", "This login is not correct. Subscription hasn't been added" as "Info";
 end if;
 end$$
 
 CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `get_money` (`vDateFrom` DATETIME, `vDateTo` DATETIME)  begin
 SET @vGetMyMoneyTic = (SELECT sum(Charge) as 'MyMoney' from ticket where ticket.PaymentType = 'cash' and ticket.PaymentTime is NOT NULL and ticket.PaymentTime between vDateFrom and vDateTo);
 SET @vGetMyMoneySub = (SELECT sum(Price) as 'MyMoney' from subscription where subscription.PurchaseTime between vDateFrom and vDateTo);
-	SELECT "DONE" as "DONE" , "0" as "ErrType", "get_user_sub" as "Fun","YourMoney" as "Info", @vGetMyMoneyTic as "TicketMoney", @vGetMyMoneySub as "SubMoney", @vGetMyMoneyTic + @vGetMyMoneySub as "TotalMoney";
+	SELECT "DONE" as "Status" , "0" as "ErrType", "get_user_sub" as "Fun","YourMoney" as "Info", @vGetMyMoneyTic as "TicketMoney", @vGetMyMoneySub as "SubMoney", @vGetMyMoneyTic + @vGetMyMoneySub as "TotalMoney";
 end$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_ticket` ()  begin
+CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `get_ticket` ()  begin
 SET @vTicNo = (SELECT max(TicketNo) from ticket) + 1; #Search new ticket number (TicketNo)
 SET @vEntryTime = NOW();
 	
 INSERT INTO ticket(TicketNo, EntryTime) VALUES(@vTicNo, @vEntryTime);
-SELECT "DONE" as "DONE" , "0" as "ErrType", "get_ticket" as "Fun","New Ticket added correctly" as "Info", @vTicNo as "TicketNo", @vEntryTime as "EntryTime";
+SELECT "DONE" as "Status" , "0" as "ErrType", "get_ticket" as "Fun","New Ticket added correctly" as "Info", @vTicNo as "TicketNo", @vEntryTime as "EntryTime";
 
 end$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_sub` (`vUserNo` INT)  begin
+CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `get_user_sub` (`vUserNo` INT)  begin
 SET @vNow = Now();
 SET @vSubNo = (SELECT SubNo from subscription natural join user_sub where UserNo = vUserNo and Now() between subscription.StartTime and subscription.EndTime);
 if (@vSubNo is NOT NULL) then
-	SELECT "DONE" as "DONE" , "0" as "ErrType", "get_user_sub" as "Fun","This user have active subscription" as "Info", @vSubNo as "SubNo";
+	SELECT "DONE" as "Status" , "0" as "ErrType", "get_user_sub" as "Fun","This user have active subscription" as "Info", @vSubNo as "SubNo";
 else
-	SELECT "ERROR" as "ERROR", "1" as "ErrType", "get_user_sub" as "Fun", "This user has no active subscription or user incorrect" as "Info";
+	SELECT "ERROR" as "Status", "1" as "ErrType", "get_user_sub" as "Fun", "This user has no active subscription or user incorrect" as "Info";
 end if;
 
 end$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `new_user` (`newLogin` VARCHAR(50), `newPass` VARCHAR(50), `newPermType` ENUM('admin','user'), `newName` VARCHAR(50), `newSurname` VARCHAR(50), `newPhone` INT(9), `newEmail` VARCHAR(50))  begin
-SET @n1 = (SELECT max(UserNo) from user) + 1; #Search new user number (UserNo)
-SET @n2 = (SELECT UserNo from user where UserLogin = newLogin);
+CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `new_user` (`newLogin` VARCHAR(50), `newPass` VARCHAR(50), `newPermType` ENUM('admin','user'), `newName` VARCHAR(50), `newSurname` VARCHAR(50), `newPhone` INT(9), `newEmail` VARCHAR(50))  begin
+SET @n1 = (SELECT max(UserNo) from userparking) + 1; #Search new user number (UserNo)
+SET @n2 = (SELECT UserNo from userparking where UserLogin = newLogin);
 if (@n2 is NULL) then
-	INSERT INTO user(UserNo, UserLogin, UserPass , PermType, Name, Surname, Phone, Email) VALUES(@n1, newLogin, newPass, newPermType, newName, newSurname, newPhone, newEmail );
-	SELECT "DONE" as "DONE" , "0" as "ErrType", "new_user" as "Fun","User added correctly" as "Info";
+	INSERT INTO userparking(UserNo, UserLogin, UserPass , PermType, Name, Surname, Phone, Email) VALUES(@n1, newLogin, newPass, newPermType, newName, newSurname, newPhone, newEmail );
+	SELECT "DONE" as "Status" , "0" as "ErrType", "new_user" as "Fun","User added correctly" as "Info";
 else
-	SELECT "ERROR" as "ERROR", "1" as "ErrType", "new_user" as "Fun", "This login is in use. User hasn't been added" as "Info";
+	SELECT "ERROR" as "Status", "1" as "ErrType", "new_user" as "Fun", "This login is in use. User hasn't been added" as "Info";
 end if;
 end$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `pay_ticket` (`vTicketNo` INT, `vPaymentType` ENUM('cash','subscription'), `vSubNo` INT)  begin
+CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `pay_ticket` (`vTicketNo` INT, `vPaymentType` ENUM('cash','subscription'), `vSubNo` INT)  begin
 SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
 if (@vEntryTime is NOT NULL) then
 	SET @vNow = Now();
 	if(vPaymentType = 'cash') then
 		UPDATE ticket SET PaymentType='cash' WHERE ticket.TicketNo = vTicketNo;
 		UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
-		SELECT "DONE" as "DONE" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+		SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
 	elseif(vPaymentType = 'subscription') then
 		SET @vUserNo = (SELECT UserNo from user_sub where user_sub.SubNo = vSubNo);
 		if(@vUserNo is NOT NULL) then
@@ -116,33 +116,36 @@ if (@vEntryTime is NOT NULL) then
 			INSERT INTO user_ticket(TicketNo, UserNo) VALUES(vTicketNo, @vUserNo);
 			UPDATE ticket SET PaymentType='subscription' WHERE ticket.TicketNo = vTicketNo;
 			UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
-			SELECT "DONE" as "DONE" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+			SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
 		else
-			SELECT "ERROR" as "ERROR", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
+			SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
 		end if;
 	else
-		SELECT "ERROR" as "ERROR", "1" as "ErrType", "pay_ticket" as "Fun", "This PaymentType is not correct. Ticket hasn't been paid" as "Info";
+		SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This PaymentType is not correct. Ticket hasn't been paid" as "Info";
 	end if;
 else
-	SELECT "ERROR" as "ERROR", "1" as "ErrType", "pay_ticket" as "Fun", "This TicketNo is not correct. Ticket hasn't been paid" as "Info";
+	SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This TicketNo is not correct. Ticket hasn't been paid" as "Info";
 end if;
 end$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `set_ticket_charge` (`vTicketNo` INT)  begin
+CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `set_ticket_charge` (`vTicketNo` INT)  begin
 SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
 if (@vEntryTime is NOT NULL) then
 	SET @vNow = Now();
 	SET @vDuration = (SELECT ((HOUR(TIMEDIFF(@vNow, @vEntryTime)) + 1)));
 	SET @vPriceHour = (SELECT prices.Price from prices where prices.Type = 'hour1');
+	
+	#TODO Check if ticket was paid to avoid paying again
+	
 	if( @vPriceHour is NOT NULL) then
 		SET @vCharge = @vDuration * @vPriceHour;
 		UPDATE ticket SET Charge=@vCharge WHERE ticket.TicketNo = vTicketNo;
-		SELECT "DONE" as "DONE" , "0" as "ErrType", "set_ticket_charge" as "Fun","Ticket charge added correctly" as "Info", @vCharge as "TicketCharge", @vDuration as "DurationTime";
+		SELECT "DONE" as "Status" , "0" as "ErrType", "set_ticket_charge" as "Fun","Ticket charge added correctly" as "Info", @vCharge as "TicketCharge", @vDuration as "DurationTime";
 	else
-		SELECT "ERROR" as "ERROR", "1" as "ErrType", "set_ticket_charge" as "Fun", "There is no price hour1 in table price. Charge hasn't been added" as "Info";	
+		SELECT "ERROR" as "Status", "1" as "ErrType", "set_ticket_charge" as "Fun", "There is no price hour1 in table price. Charge hasn't been added" as "Info";	
 	end if;
 else
-	SELECT "ERROR" as "ERROR", "1" as "ErrType", "set_ticket_charge" as "Fun", "This TicketNo is not correct. Charge hasn't been added" as "Info";
+	SELECT "ERROR" as "Status", "1" as "ErrType", "set_ticket_charge" as "Fun", "This TicketNo is not correct. Charge hasn't been added" as "Info";
 end if;
 end$$
 
@@ -215,15 +218,16 @@ CREATE TABLE `ticket` (
 
 INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `PaymentType`, `Charge`) VALUES
 (1, '2017-11-15 09:00:00', NULL, '2017-11-16 13:43:05', 'cash', 8700),
-(2, '2017-11-16 01:02:51', NULL, '2017-11-16 14:17:35', 'cash', 3900);
+(2, '2017-11-16 01:02:51', NULL, '2017-11-16 14:17:35', 'cash', 3900),
+(3, '2017-11-21 18:00:45', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Table structure for table `userparking`
 --
 
-CREATE TABLE `user` (
+CREATE TABLE `userparking` (
   `UserNo` int(11) NOT NULL,
   `UserLogin` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `UserPass` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
@@ -235,10 +239,10 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `user`
+-- Dumping data for table `userparking`
 --
 
-INSERT INTO `user` (`UserNo`, `UserLogin`, `UserPass`, `PermType`, `Name`, `Surname`, `Phone`, `Email`) VALUES
+INSERT INTO `userparking` (`UserNo`, `UserLogin`, `UserPass`, `PermType`, `Name`, `Surname`, `Phone`, `Email`) VALUES
 (1, 'admin', 'admin', 'admin', 'Admin', 'Admin', 660770880, 'admin@sql.com'),
 (2, 'javaparking', 'javaparking', 'admin', 'Java', 'Park', 999999999, 'Java@Park.com'),
 (3, 'Klos', 'Labs', 'user', 'Klos', 'Labs', 111222333, 'vip@kk');
@@ -303,9 +307,9 @@ ALTER TABLE `ticket`
   ADD PRIMARY KEY (`TicketNo`);
 
 --
--- Indexes for table `user`
+-- Indexes for table `userparking`
 --
-ALTER TABLE `user`
+ALTER TABLE `userparking`
   ADD PRIMARY KEY (`UserNo`);
 
 --
@@ -342,13 +346,13 @@ ALTER TABLE `subscription`
 -- AUTO_INCREMENT for table `ticket`
 --
 ALTER TABLE `ticket`
-  MODIFY `TicketNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `TicketNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
--- AUTO_INCREMENT for table `user`
+-- AUTO_INCREMENT for table `userparking`
 --
-ALTER TABLE `user`
-  MODIFY `UserNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `userparking`
+  MODIFY `UserNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -358,14 +362,14 @@ ALTER TABLE `user`
 -- Constraints for table `user_sub`
 --
 ALTER TABLE `user_sub`
-  ADD CONSTRAINT `user_sub_fk_1` FOREIGN KEY (`UserNo`) REFERENCES `user` (`UserNo`),
+  ADD CONSTRAINT `user_sub_fk_1` FOREIGN KEY (`UserNo`) REFERENCES `userparking` (`UserNo`),
   ADD CONSTRAINT `user_sub_fk_2` FOREIGN KEY (`SubNo`) REFERENCES `subscription` (`SubNo`);
 
 --
 -- Constraints for table `user_ticket`
 --
 ALTER TABLE `user_ticket`
-  ADD CONSTRAINT `user_ticket_fk_1` FOREIGN KEY (`UserNo`) REFERENCES `user` (`UserNo`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `user_ticket_fk_1` FOREIGN KEY (`UserNo`) REFERENCES `userparking` (`UserNo`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `user_ticket_fk_2` FOREIGN KEY (`TicketNo`) REFERENCES `ticket` (`TicketNo`);
 COMMIT;
 

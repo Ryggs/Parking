@@ -5,33 +5,26 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import parking.server.utils.DialogsUtils;
+import parking.server.utils.FXMLUtils;
+
 import java.io.IOException;
 import java.util.Locale;
-import java.util.ResourceBundle;
 //import parking.server.bundles.*;
 
 
 public class RootLayoutController {
 
+    public static final String ROOT_LAYOUT_FXML_PATH = "../view/RootLayout.fxml";
+    public static final String MAIN_MENU_PANE_FXML_PATH = "../view/MainMenuPane.fxml";
     @FXML
     private MenuBar menuBar;
-
-    private FXMLLoader rootLoader;
-    private ResourceBundle bundle;
-
-    public RootLayoutController() {
-        rootLoader = new FXMLLoader();
-        bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
-        rootLoader.setResources(bundle);
-    }
-
 
     @FXML
     private BorderPane borderPane;
@@ -39,17 +32,14 @@ public class RootLayoutController {
 
     public void startApp() throws IOException {
 
-
-//        System.out.println("Res: " + getClass().getResource("../view/RootLayout.fxml"));
-        rootLoader.setLocation(getClass().getResource("../view/RootLayout.fxml"));
-
-        borderPane = rootLoader.load();
+        borderPane = (BorderPane) FXMLUtils.fxmlLoad(ROOT_LAYOUT_FXML_PATH);
 
         System.out.println(borderPane.getChildren());
         Stage appStage = new Stage();
         Scene scene = new Scene(borderPane);
+
         appStage.setScene(scene);
-        appStage.setTitle(bundle.getString("title.application"));
+        appStage.setTitle(FXMLUtils.getResourceBundle().getString("title.application"));
         appStage.show();
         loadMainMenuScreen();
 
@@ -60,19 +50,13 @@ public class RootLayoutController {
 
 
     public void loadMainMenuScreen() {
-        FXMLLoader loader = new FXMLLoader(this.getClass().getResource("../view/MainMenuPane.fxml"));
-        ResourceBundle bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
-        loader.setResources(bundle);
-        //System.out.println(this.getClass().getResource("../view/MainMenuPane.fxml"));
-        AnchorPane pane = null;
-        try {
-            pane = loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        MainMenuController menuController = loader.getController();
+
+        AnchorPane pane = (AnchorPane) FXMLUtils.fxmlLoad(MAIN_MENU_PANE_FXML_PATH);
+
+        MainMenuController menuController = FXMLUtils.getLoader().getController();
         menuController.setRootController(this);
         setScreen(pane);
+
     }
 
     @FXML
@@ -89,7 +73,6 @@ public class RootLayoutController {
         Locale.setDefault(new Locale("en"));
         System.out.println(Locale.getDefault());
         // Close window
-
 
         ((Node) menuBar).getScene().getWindow().hide();
         startApp();
@@ -109,6 +92,8 @@ public class RootLayoutController {
     }
 
     public RootLayoutController getController(){
+
+        System.out.println("Spr co zwraca rootlayout get controller");
         return this;
     }
 
@@ -134,5 +119,9 @@ public class RootLayoutController {
         Stage currStage = (Stage) borderPane.getScene().getWindow();
         currStage.setAlwaysOnTop(check);
 
+    }
+
+    public void about() {
+        DialogsUtils.dialogAboutApplication();
     }
 }

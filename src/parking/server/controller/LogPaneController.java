@@ -8,6 +8,7 @@ public class LogPaneController {
     }
 
     public void backToMenu(){
+        System.out.println("root w log: " + rootController.toString());
         rootController.loadMainMenuScreen();
     }
 }

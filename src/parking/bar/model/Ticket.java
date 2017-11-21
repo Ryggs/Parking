@@ -2,6 +2,7 @@ package parking.bar.model;
 
 import javafx.beans.property.*;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  *
@@ -9,9 +10,9 @@ import java.sql.Date;
 public class Ticket {
     //Declare Ticket Table Columns
     private IntegerProperty TicketNo;
-    private SimpleObjectProperty<Date> EntryTime;
-    private SimpleObjectProperty<Date> LeaveTime;
-    private SimpleObjectProperty<Date> PaymentTime;
+    private SimpleObjectProperty<Timestamp> EntryTime;
+    private SimpleObjectProperty<Timestamp> LeaveTime;
+    private SimpleObjectProperty<Timestamp> PaymentTime;
     private StringProperty PaymentType;
     private IntegerProperty Charge;
 
@@ -43,11 +44,11 @@ public class Ticket {
         return EntryTime.get();
     }
 
-    public void setEntryTime(Date EntryTime){
+    public void setEntryTime(Timestamp EntryTime){
         this.EntryTime.set(EntryTime);
     }
 
-    public SimpleObjectProperty<Date> entryTimeProperty(){
+    public SimpleObjectProperty<Timestamp> entryTimeProperty(){
         return EntryTime;
     }
 
@@ -56,11 +57,11 @@ public class Ticket {
         return LeaveTime.get();
     }
 
-    public void setLeaveTime(Date LeaveTime){
+    public void setLeaveTime(Timestamp LeaveTime){
         this.LeaveTime.set(LeaveTime);
     }
 
-    public SimpleObjectProperty<Date> leaveTimeProperty(){
+    public SimpleObjectProperty<Timestamp> leaveTimeProperty(){
         return LeaveTime;
     }
 
@@ -69,11 +70,11 @@ public class Ticket {
         return PaymentTime.get();
     }
 
-    public void setPaymentTime(Date PaymentTime){
+    public void setPaymentTime(Timestamp PaymentTime){
         this.PaymentTime.set(PaymentTime);
     }
 
-    public SimpleObjectProperty<Date> paymentTimeProperty(){
+    public SimpleObjectProperty<Timestamp> paymentTimeProperty(){
         return PaymentTime;
     }
 

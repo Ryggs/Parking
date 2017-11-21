@@ -6,14 +6,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class MainBarEnter extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("view/BarLayoutEnter.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
-        primaryStage.setFullScreen(true);
+        Parent root = FXMLLoader.load(getClass().getResource("view/BarEnterLayout.fxml"));
+        primaryStage.setTitle("BarEnter");
+        primaryStage.setScene(new Scene(root, 600, 500));
+       // primaryStage.setFullScreen(true);
         primaryStage.setFullScreenExitHint(" ");
       //  primaryStage.setFullScreenExitKeyCombination();
         primaryStage.show();

@@ -27,7 +27,7 @@ begin
 SET @n1 = (SELECT max(UserNo) from user) + 1; #Search new user number (UserNo)
 SET @n2 = (SELECT UserNo from user where UserLogin = newLogin);
 if (@n2 is NULL) then
-	INSERT INTO user(UserNo, UserLogin, UserPass , PermType, Name, Surname, Phone, Email) VALUES(@n1, newLogin, newPass, newPermType, newName, newSurname, newPhone, newEmail );
+	INSERT INTO userparking(UserNo, UserLogin, UserPass , PermType, Name, Surname, Phone, Email) VALUES(@n1, newLogin, newPass, newPermType, newName, newSurname, newPhone, newEmail );
 	SELECT "DONE" as "DONE" , "0" as "ErrType", "new_user" as "Fun","User added correctly" as "Info";
 else
 	SELECT "ERROR" as "ERROR", "1" as "ErrType", "new_user" as "Fun", "This login is in use. User hasn't been added" as "Info";

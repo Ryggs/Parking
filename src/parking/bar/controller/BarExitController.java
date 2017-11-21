@@ -1,4 +1,4 @@
 package parking.bar.controller;
 
-public class BarController {
+public class BarExitController {
 }

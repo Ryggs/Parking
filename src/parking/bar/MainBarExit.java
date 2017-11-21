@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class MainBarEnter extends Application {
+public class MainBarExit extends Application {
 
     //This is our PrimaryStage (It contains everything)
     private Stage primaryStage;
@@ -26,13 +26,13 @@ public class MainBarEnter extends Application {
         this.primaryStage = primaryStage;
 
         //Set a title for primary stage
-        this.primaryStage.setTitle("BarEnter");
+        this.primaryStage.setTitle("ExitEnter");
 
         //2) Initialize RootLayout
         initRootLayout();
 
         //3) Display the EnterBar View
-        showEnterBarView();
+        showExitBarView();
 
     }
 
@@ -41,7 +41,7 @@ public class MainBarEnter extends Application {
         try {
             //First, load root layout from RootLayout.fxml
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainBarEnter.class.getResource("view/PrimaryLayout.fxml"));
+            loader.setLocation(MainBarExit.class.getResource("view/PrimaryLayout.fxml"));
             rootLayout = (BorderPane) loader.load();
 
             //Second, show the scene containing the root layout.
@@ -49,7 +49,7 @@ public class MainBarEnter extends Application {
             primaryStage.setScene(scene); //Set the scene in primary stage.
 
             //Third, show the primary stage
-            primaryStage.setFullScreenExitHint("ENTER BAR");
+            primaryStage.setFullScreenExitHint("EXIT BAR");
             primaryStage.setFullScreen(true);
             primaryStage.show(); //Display the primary stage
         } catch (IOException e) {
@@ -58,15 +58,15 @@ public class MainBarEnter extends Application {
     }
 
     //Shows Enter Bar view in the middle of the screen
-    public void showEnterBarView() {
+    public void showExitBarView() {
         try {
             //load BarEnterView
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainBarEnter.class.getResource("view/BarEnterLayout.fxml"));
-            AnchorPane BarEnterView = (AnchorPane) loader.load();
+            loader.setLocation(MainBarExit.class.getResource("view/BarExitLayout.fxml"));
+            AnchorPane BarExitView = (AnchorPane) loader.load();
 
             // Set BarEnterView into the center of root layout.
-            rootLayout.setCenter(BarEnterView);
+            rootLayout.setCenter(BarExitView);
         } catch (IOException e) {
             e.printStackTrace();
         }

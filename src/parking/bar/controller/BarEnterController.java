@@ -10,7 +10,6 @@ import java.sql.SQLException;
 
 
 
-
 public class BarEnterController {
 
     @FXML

@@ -21,9 +21,10 @@ public class DBUtil {
 
     //Connection String
     //String connStr = "jdbc:oracle:thin:Username/Password@IP:Port/SID";  - oracle
-    //       jdbc:mysql://localhost:3306/
-    private static final String connStr = String.format("jdbc:mysql://%s:%s", ip, port);
-
+    //       jdbc:mysql://localhost:3306/carpark
+    private static final String connStr = String.format("jdbc:mysql://%s:%s/%s", ip, port, sid);
+    // That format is needed for calling stored procedures
+    private static final String connStrLogin = String.format("jdbc:mysql://%s:%s/%s?user=%s&password=%s", ip, port, sid, username, pass);
     // Connect to DB
     public static void dbConnect() throws SQLException {
         // setting Oracle driver
@@ -38,11 +39,12 @@ public class DBUtil {
 
         // Establish the Oracle Connection
         try {
-            conn = DriverManager.getConnection(connStr,username,pass);
+            conn = DriverManager.getConnection(connStrLogin);
         } catch (SQLException e) {
             System.err.println("Connection failed!");
             e.printStackTrace();
         }
+
     }
 
     // Close connection
@@ -97,7 +99,6 @@ public class DBUtil {
         }
         return cachedRowSet;
     }
-
     public static void dbExecuteUpdate(String sqlStmt) throws SQLException {
         Statement stmt = null;
 

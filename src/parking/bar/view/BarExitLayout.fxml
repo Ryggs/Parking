@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.bar.controller.BarExitController">
+   <children>
+      <Button fx:id="numBtn4" layoutX="108.0" layoutY="201.0" mnemonicParsing="false" onAction="#num4" prefHeight="57.0" prefWidth="73.0" text="4" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtn5" layoutX="188.0" layoutY="201.0" mnemonicParsing="false" onAction="#num5" prefHeight="57.0" prefWidth="73.0" text="5" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtn6" layoutX="268.0" layoutY="201.0" mnemonicParsing="false" onAction="#num6" prefHeight="57.0" prefWidth="73.0" text="6" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtn7" layoutX="108.0" layoutY="264.0" mnemonicParsing="false" onAction="#num7" prefHeight="57.0" prefWidth="73.0" text="7" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtn8" layoutX="188.0" layoutY="264.0" mnemonicParsing="false" onAction="#num8" prefHeight="57.0" prefWidth="73.0" text="8" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtn9" layoutX="268.0" layoutY="264.0" mnemonicParsing="false" onAction="#num9" prefHeight="57.0" prefWidth="73.0" text="9" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtnC" layoutX="108.0" layoutY="327.0" mnemonicParsing="false" onAction="#numC" prefHeight="57.0" prefWidth="73.0" text="C" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtn0" layoutX="188.0" layoutY="327.0" mnemonicParsing="false" onAction="#num0" prefHeight="57.0" prefWidth="73.0" text="0" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtnCE" layoutX="268.0" layoutY="327.0" mnemonicParsing="false" onAction="#numCE" prefHeight="57.0" prefWidth="73.0" text="CE" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtn1" layoutX="108.0" layoutY="137.0" mnemonicParsing="false" onAction="#num1" prefHeight="57.0" prefWidth="73.0" text="1" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtn2" layoutX="188.0" layoutY="137.0" mnemonicParsing="false" onAction="#num2" prefHeight="57.0" prefWidth="73.0" text="2" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <Button fx:id="numBtn3" layoutX="268.0" layoutY="137.0" mnemonicParsing="false" onAction="#num3" prefHeight="57.0" prefWidth="73.0" text="3" textAlignment="CENTER">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Button>
+      <TextArea fx:id="resultArea" layoutX="36.0" layoutY="394.0" prefHeight="117.0" prefWidth="529.0" />
+      <Button fx:id="openBarBtn" layoutX="370.0" layoutY="137.0" mnemonicParsing="false" onAction="#openBar" prefHeight="57.0" prefWidth="185.0" text="Otwórz szlaban / Open Bar" />
+      <Label layoutX="107.0" layoutY="14.0" prefHeight="30.0" prefWidth="299.0" text="Wprowadź numer biletu" wrapText="true">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <TextField fx:id="codeArea" layoutX="107.0" layoutY="75.0" prefHeight="43.0" prefWidth="236.0" promptText="Enter code">
+         <font>
+            <Font size="26.0" />
+         </font>
+      </TextField>
+      <Label layoutX="108.0" layoutY="44.0" text="Enter ticket number">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

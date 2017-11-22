@@ -15,6 +15,7 @@ public class BarExitController {
     private String code = "";   // max number is 10 digits long ticketNo + 2 ditigs controlCode
 
 
+
     @FXML
     private TextArea resultArea;
 
@@ -24,7 +25,7 @@ public class BarExitController {
     //OpenBar
     @FXML
     private void openBar(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        //TODO THIS FUNCTION
+        //TODO odliczanie czasu na wyjazd, zapis do pliku
 
         setInfoToResultArea("Enter correct code");
         System.out.println("OpenBar");
@@ -35,8 +36,8 @@ public class BarExitController {
 
                 boolean canOpenBar = TicketDAO.canTicketExit(Integer.parseInt(getCode().substring(0, getCode().length() - 2)),
                         Integer.parseInt(getCode().substring(getCode().length() - 2, getCode().length())));
-                System.out.println("ticketNo" + Integer.parseInt(getCode().substring(0, getCode().length() - 2)));
-                System.out.println("controlCode" + Integer.parseInt(getCode().substring(getCode().length() - 2,getCode().length())));
+                System.out.println("ticketNo: " + Integer.parseInt(getCode().substring(0, getCode().length() - 2)));
+                System.out.println("controlCode: " + Integer.parseInt(getCode().substring(getCode().length() - 2,getCode().length())));
 
                 if (canOpenBar) {
                     setInfoToResultArea("Bar is opened for 30 sec\nHave a nice day!");
@@ -48,7 +49,6 @@ public class BarExitController {
                     showCode();
                 }
 
-
             } catch (SQLException e) {
                 System.out.println("Error occurred while checking ticket in DB.\n" + e);
                 setInfoToResultArea("Error occured with our DataBase\nContact with administrator, please");
@@ -57,7 +57,7 @@ public class BarExitController {
                 System.out.println("Error occurred while transforming code.\n" + e);
                 setInfoToResultArea("Error: Your code is not correct\nEnter right code");
                 setCode("");
-                showCode();
+                //showCode();
             }
     }
 
@@ -72,7 +72,7 @@ public class BarExitController {
     //KeyCE clear everything
     @FXML
     private void numCE(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        setCode("CE");
+        setCode("");
         showCode();
     }
 
@@ -148,48 +148,11 @@ public class BarExitController {
     }
 
     void setCode(String newCode) {
-        boolean canSetNewCode = false;
-        if(newCode.equals("CE"))
-            this.code = "";
-        else if (newCode.length() < 13) { //&& Integer.parseInt(getCode()) < 2147483647
-            canSetNewCode = true;
-            //TODO check if ticketNo is smaller than 2147483647
-//            if(newCode.length() == 0)
-//                canSetNewCode = true;
-//            if(newCode.length() == 1) {
-//                if (Integer.parseInt(newCode) < 3)
-//                    canSetNewCode = true;
-//            }
-//            else if (newCode.length() == 2 || newCode.length() == 3)
-//                canSetNewCode = true;
-//            else {
-//                int newTicektNo = Integer.parseInt(getCode().substring(0, getCode().length() - 2));
-//
-//                if (newCode.length() == 4 && newTicektNo <= 21)
-//                    canSetNewCode = true;
-//                else if (newCode.length() == 5 && newTicektNo <= 214)
-//                    canSetNewCode = true;
-//                else if (newCode.length() == 6 && newTicektNo <= 2147)
-//                    canSetNewCode = true;
-//                else if (newCode.length() == 7 && newTicektNo <= 21474)
-//                    canSetNewCode = true;
-//                else if (newCode.length() == 8 && newTicektNo <= 214748)
-//                    canSetNewCode = true;
-//                else if (newCode.length() == 9 && newTicektNo <= 2147483)
-//                    canSetNewCode = true;
-//                else if (newCode.length() == 10 && newTicektNo <= 21474836)
-//                    canSetNewCode = true;
-//                else if (newCode.length() == 11 && newTicektNo <= 214748364)
-//                    canSetNewCode = true;
-//                else if (newTicektNo <= 2147483647)
-//                    canSetNewCode = true;
-//
-//            }
-        }
-
-        if(canSetNewCode)
+        // check if ticketNo is smaller than 2147483647 DONE WITH USE OF TRY/CATCH java.lang.NumberFormatException
+        // check if code is no longer than 12 digits (10 digits ticketNo + 2 digits controlCode)
+        if (newCode.length() < 13) { // Integer.parseInt(getCode()) < 2147483647
             this.code = newCode;
-
+        }
     }
 
     String getCode() {

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 21, 2017 at 10:20 PM
+-- Generation Time: Nov 22, 2017 at 09:37 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -61,6 +61,32 @@ else
 end if;
 end$$
 
+CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `check_ticket_can_exit` (`vTicketNo` INT, `vControlCode` INT)  begin
+SET @vPaymentTime = (SELECT PaymentTime from ticket where TicketNo = vTicketNo);
+if (@vPaymentTime is NOT NULL) then
+	SET @vControlCodeDB = (SELECT ControlCode from ticket where TicketNo = vTicketNo);
+	if(vControlCode = @vControlCodeDB) then
+		SET @vLeaveTime = (SELECT LeaveTime from ticket where TicketNo = vTicketNo);
+		if(@vLeaveTime is NULL) then
+			SET @vNow = Now();
+			SET @vDuration = (SELECT (TIMEDIFF(@vNow, @vPaymentTime)));
+			if(@vDuration < "00:15:00") then
+				#UPDATE ticket SET LeaveTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+				SELECT "DONE" as "Status" , "0" as "ErrType", "check_ticket_can_exit" as "Fun","Ticket LeaveTime added corectly" as "Info";
+			else
+				SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "Your 15 min delay has gone. You have to pay ticket again for additional minutes" as "Info";
+			end if;
+		else
+			SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "This ticket has left parking. You can not open bar again" as "Info";
+		end if;
+	else
+		SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "This ControlCode is incorrect" as "Info";
+	end if;
+else
+	SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "This TicketNo is not correct or Ticket hasn't been paid" as "Info";
+end if;
+end$$
+
 CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `get_money` (`vDateFrom` DATETIME, `vDateTo` DATETIME)  begin
 SET @vGetMyMoneyTic = (SELECT sum(Charge) as 'MyMoney' from ticket where ticket.PaymentType = 'cash' and ticket.PaymentTime is NOT NULL and ticket.PaymentTime between vDateFrom and vDateTo);
 SET @vGetMyMoneySub = (SELECT sum(Price) as 'MyMoney' from subscription where subscription.PurchaseTime between vDateFrom and vDateTo);
@@ -102,21 +128,24 @@ CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `pay_ticket` (`vTicketNo` INT
 SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
 if (@vEntryTime is NOT NULL) then
 	SET @vNow = Now();
+	SET @vControlCode = (SELECT ROUND(((99 - 10 -1) * RAND() + 10), 0)); #Get random control code from 10 to 99
 	if(vPaymentType = 'cash') then
 		UPDATE ticket SET PaymentType='cash' WHERE ticket.TicketNo = vTicketNo;
 		UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
-		SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+		UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
+		SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
 	elseif(vPaymentType = 'subscription') then
 		SET @vUserNo = (SELECT UserNo from user_sub where user_sub.SubNo = vSubNo);
 		if(@vUserNo is NOT NULL) then
 		
 			#TODO ERROR This user used his subscription to pay for another ticket at the same time // zabezpieczenie przeciwcebulowe
-		
-		
+					
 			INSERT INTO user_ticket(TicketNo, UserNo) VALUES(vTicketNo, @vUserNo);
 			UPDATE ticket SET PaymentType='subscription' WHERE ticket.TicketNo = vTicketNo;
 			UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
-			SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+			UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
+			
+			SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
 		else
 			SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
 		end if;
@@ -209,17 +238,64 @@ CREATE TABLE `ticket` (
   `LeaveTime` datetime DEFAULT NULL,
   `PaymentTime` datetime DEFAULT NULL,
   `PaymentType` enum('cash','subscription') COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Charge` int(11) DEFAULT NULL
+  `Charge` int(11) DEFAULT NULL,
+  `ControlCode` int(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `ticket`
 --
 
-INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `PaymentType`, `Charge`) VALUES
-(1, '2017-11-15 09:00:00', NULL, '2017-11-16 13:43:05', 'cash', 8700),
-(2, '2017-11-16 01:02:51', NULL, '2017-11-16 14:17:35', 'cash', 3900),
-(3, '2017-11-21 18:00:45', NULL, NULL, NULL, NULL);
+INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `PaymentType`, `Charge`, `ControlCode`) VALUES
+(1, '2017-11-15 09:00:00', NULL, '2017-11-16 13:43:05', 'cash', 8700, 67),
+(2, '2017-11-16 01:02:51', NULL, '2017-11-16 14:17:35', 'cash', 3900, 14),
+(3, '2017-11-21 18:00:45', '2017-11-22 00:50:04', '2017-11-22 13:47:21', 'cash', NULL, 74),
+(4, '2017-11-21 22:41:07', '2017-11-22 01:13:18', '2017-11-22 13:49:07', 'cash', NULL, 32),
+(5, '2017-11-21 22:41:08', '2017-11-22 01:16:50', '2017-11-22 08:00:00', NULL, NULL, NULL),
+(6, '2017-11-21 23:21:19', '2017-11-22 01:18:33', '2017-11-22 19:00:00', NULL, NULL, 12),
+(7, '2017-11-21 23:21:20', NULL, '2017-11-22 23:00:00', NULL, NULL, 10),
+(8, '2017-11-22 19:47:14', NULL, NULL, NULL, NULL, NULL),
+(9, '2017-11-22 19:48:26', NULL, NULL, NULL, NULL, NULL),
+(10, '2017-11-22 19:48:32', NULL, NULL, NULL, NULL, NULL),
+(11, '2017-11-22 19:49:00', NULL, NULL, NULL, NULL, NULL),
+(12, '2017-11-22 19:50:04', NULL, NULL, NULL, NULL, NULL),
+(13, '2017-11-22 19:54:52', NULL, NULL, NULL, NULL, NULL),
+(14, '2017-11-22 19:55:46', NULL, NULL, NULL, NULL, NULL),
+(15, '2017-11-22 19:57:02', NULL, NULL, NULL, NULL, NULL),
+(16, '2017-11-22 19:57:42', NULL, NULL, NULL, NULL, NULL),
+(17, '2017-11-22 20:09:21', NULL, NULL, NULL, NULL, NULL),
+(18, '2017-11-22 20:12:52', NULL, NULL, NULL, NULL, NULL),
+(19, '2017-11-22 20:34:11', NULL, NULL, NULL, NULL, NULL),
+(20, '2017-11-22 20:35:13', NULL, NULL, NULL, NULL, NULL),
+(21, '2017-11-22 20:39:16', NULL, NULL, NULL, NULL, NULL),
+(22, '2017-11-22 20:40:32', NULL, NULL, NULL, NULL, NULL),
+(23, '2017-11-22 20:42:40', NULL, NULL, NULL, NULL, NULL),
+(24, '2017-11-22 20:45:56', NULL, NULL, NULL, NULL, NULL),
+(25, '2017-11-22 20:46:49', NULL, NULL, NULL, NULL, NULL),
+(26, '2017-11-22 20:47:32', NULL, NULL, NULL, NULL, NULL),
+(27, '2017-11-22 20:50:28', NULL, NULL, NULL, NULL, NULL),
+(28, '2017-11-22 20:51:01', NULL, NULL, NULL, NULL, NULL),
+(29, '2017-11-22 20:52:22', NULL, NULL, NULL, NULL, NULL),
+(30, '2017-11-22 20:53:11', NULL, NULL, NULL, NULL, NULL),
+(31, '2017-11-22 20:54:18', NULL, NULL, NULL, NULL, NULL),
+(32, '2017-11-22 21:08:18', NULL, NULL, NULL, NULL, NULL),
+(33, '2017-11-22 21:09:06', NULL, NULL, NULL, NULL, NULL),
+(34, '2017-11-22 21:09:56', NULL, NULL, NULL, NULL, NULL),
+(35, '2017-11-22 21:10:42', NULL, NULL, NULL, NULL, NULL),
+(36, '2017-11-22 21:11:22', NULL, NULL, NULL, NULL, NULL),
+(37, '2017-11-22 21:11:57', NULL, NULL, NULL, NULL, NULL),
+(38, '2017-11-22 21:12:43', NULL, NULL, NULL, NULL, NULL),
+(39, '2017-11-22 21:18:05', NULL, NULL, NULL, NULL, NULL),
+(40, '2017-11-22 21:18:58', NULL, NULL, NULL, NULL, NULL),
+(41, '2017-11-22 21:20:05', NULL, NULL, NULL, NULL, NULL),
+(42, '2017-11-22 21:21:47', NULL, NULL, NULL, NULL, NULL),
+(43, '2017-11-22 21:22:56', NULL, NULL, NULL, NULL, NULL),
+(44, '2017-11-22 21:23:40', NULL, NULL, NULL, NULL, NULL),
+(45, '2017-11-22 21:24:43', NULL, NULL, NULL, NULL, NULL),
+(46, '2017-11-22 21:29:39', NULL, NULL, NULL, NULL, NULL),
+(47, '2017-11-22 21:30:35', NULL, NULL, NULL, NULL, NULL),
+(48, '2017-11-22 21:31:11', NULL, NULL, NULL, NULL, NULL),
+(49, '2017-11-22 21:36:35', NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -346,13 +422,13 @@ ALTER TABLE `subscription`
 -- AUTO_INCREMENT for table `ticket`
 --
 ALTER TABLE `ticket`
-  MODIFY `TicketNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `TicketNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `userparking`
 --
 ALTER TABLE `userparking`
-  MODIFY `UserNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `UserNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

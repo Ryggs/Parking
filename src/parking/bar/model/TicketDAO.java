@@ -43,9 +43,9 @@ public class TicketDAO {
 //*******************************
 //Check if car can exit within 15 minutes
 //*******************************
-    public static boolean canTicketExit(int ticketNo) throws SQLException, ClassNotFoundException {
+    public static boolean canTicketExit(int ticketNo, int controlCode) throws SQLException, ClassNotFoundException {
 
-        String stmt = "CALL check_ticket_can_exit(" + ticketNo + ")";
+        String stmt = "CALL check_ticket_can_exit(" + ticketNo + "," + controlCode + ")";
         System.out.println(stmt);
         try {
             //Get ResultSet from dbExecuteQuery method

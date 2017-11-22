@@ -71,17 +71,17 @@
       </Button>
       <TextArea fx:id="resultArea" layoutX="36.0" layoutY="394.0" prefHeight="117.0" prefWidth="529.0" />
       <Button fx:id="openBarBtn" layoutX="370.0" layoutY="137.0" mnemonicParsing="false" onAction="#openBar" prefHeight="57.0" prefWidth="185.0" text="Otwórz szlaban / Open Bar" />
-      <Label layoutX="107.0" layoutY="14.0" prefHeight="30.0" prefWidth="299.0" text="Wprowadź numer biletu" wrapText="true">
+      <Label layoutX="107.0" layoutY="14.0" prefHeight="30.0" prefWidth="448.0" text="Wprowadź numer biletu i kod kontrolny" wrapText="true">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <TextField fx:id="codeArea" layoutX="107.0" layoutY="75.0" prefHeight="43.0" prefWidth="236.0" promptText="Enter code">
+      <TextField fx:id="codeArea" layoutX="107.0" layoutY="75.0" prefHeight="56.0" prefWidth="235.0" promptText="Enter code">
          <font>
             <Font size="26.0" />
          </font>
       </TextField>
-      <Label layoutX="108.0" layoutY="44.0" text="Enter ticket number">
+      <Label layoutX="108.0" layoutY="44.0" prefHeight="30.0" prefWidth="448.0" text="Enter ticket number and control code">
          <font>
             <Font size="20.0" />
          </font>

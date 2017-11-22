@@ -29,7 +29,26 @@ public class BarExitController {
 
         setInfoToResultArea("OpenBar");
         System.out.println("OpenBar");
+        if(code.length()>0)
+            try {
+                boolean canOpenBar = TicketDAO.canTicketExit(Integer.parseInt(code));
 
+                if(canOpenBar){
+                    setInfoToResultArea("Bar is opened for 30 sec\nHave a nice day!");
+                    setCode("");
+                    showCode();
+                }
+                else{
+                    setInfoToResultArea("Error occured\nyou didn't pay your ticket");
+                    setCode("");
+                    showCode();
+                }
+
+
+            } catch (SQLException e){
+                System.out.println("Error occurred while getting new ticket from DB.\n" + e);
+                throw e;
+            }
     }
     //KeyC erase last digit
     @FXML

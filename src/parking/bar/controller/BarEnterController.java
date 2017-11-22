@@ -1,6 +1,7 @@
 package parking.bar.controller;
 import parking.bar.model.Ticket;
 import parking.bar.model.TicketDAO;
+import parking.bar.model.Bar;
 //javaFX
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,7 +19,9 @@ import com.sun.javafx.print.Units;
 //sql
 import java.sql.SQLException;
 
-public class BarEnterController {
+public class BarEnterController{
+    private boolean canGetTicket = true;
+    Bar barChecker;
 
     @FXML
     private TextArea resultArea;
@@ -35,38 +38,50 @@ public class BarEnterController {
     //get new ticket from DataBase
     @FXML
     private void getTicket(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        //TODO odliczanie czasu i wypiswywanie do pliku
-        System.out.println("Pobieram nowy bilet");
-        try {
-            Ticket newTicket = TicketDAO.getNewTicket();
-            String newInfo = "Twój nr biletu to " + newTicket.getTicketNo();
-            String newInfo2 = "\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0,19);
-            String newInfo3 = "\nMasz 30sek na wjazd";
+        setInfoToTextArea("Zaczekaj aż szlaban opadnie");
+        if(Bar.isBarClosed)
+            canGetTicket = true;
+        if(canGetTicket) {
+            canGetTicket = false;
+            System.out.println("Pobieram nowy bilet");
+            try {
+                Ticket newTicket = TicketDAO.getNewTicket();
+                String newInfo = "Twój nr biletu to " + newTicket.getTicketNo();
+                String newInfo2 = "\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0, 19);
+                String newInfo3 = "\nMasz 30sek na wjazd";
 
-            System.out.println(newInfo);
-            System.out.println(newInfo2);
-            System.out.println(newInfo3);
-            setInfoToTextArea(newInfo + newInfo2 + newInfo3);
+                System.out.println(newInfo);
+                System.out.println(newInfo2);
+                System.out.println(newInfo3);
+                setInfoToTextArea(newInfo + newInfo2 + newInfo3);
 
-            //set up ticket
-            printingArea.setFont(Font.font(8));
-            printingArea.setPrefColumnCount(20);
-            printingArea.setPrefRowCount(7);
-            //set ticket info
-            printingArea.setText("********* Parking javaPark *********");
-            printingArea.appendText("\n======================");
-            printingArea.appendText("\nTwój nr biletu to " + newTicket.getTicketNo());
-            printingArea.appendText("\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0,19));
-            printingArea.appendText("\n======================");
-            printingArea.appendText("\nZachowaj ten bilet");
-            printingArea.appendText("\nPrzed wyjazdem opłać w automacie");
+                //set up ticket
+                printingArea.setFont(Font.font(8));
+                printingArea.setPrefColumnCount(20);
+                printingArea.setPrefRowCount(7);
+                //set ticket info
+                printingArea.setText("********* Parking javaPark *********");
+                printingArea.appendText("\n======================");
+                printingArea.appendText("\nTwój nr biletu to " + newTicket.getTicketNo());
+                printingArea.appendText("\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0, 19));
+                printingArea.appendText("\n======================");
+                printingArea.appendText("\nZachowaj ten bilet");
+                printingArea.appendText("\nPrzed wyjazdem opłać w automacie");
 
-            //Print ticket
-            print(printingArea);
+                //Print ticket
+                print(printingArea);
 
-        } catch (SQLException e){
-            System.out.println("Error occurred while getting new ticket from DB.\n" + e);
-            throw e;
+                //open Bar
+                Bar.openBar();
+
+                //run thread to check for bar status
+                barChecker = new Bar();
+                barChecker.start();
+
+            } catch (SQLException e) {
+                System.out.println("Error occurred while getting new ticket from DB.\n" + e);
+                throw e;
+            }
         }
     }
 
@@ -103,4 +118,5 @@ public class BarEnterController {
             resultArea.appendText("\nPrinting failed.\nThere is no printer");
         }
     }
+
 }

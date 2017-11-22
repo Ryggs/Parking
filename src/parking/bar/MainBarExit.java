@@ -50,7 +50,7 @@ public class MainBarExit extends Application {
 
             //Third, show the primary stage
             primaryStage.setFullScreenExitHint("EXIT BAR");
-            //primaryStage.setFullScreen(true);
+            primaryStage.setFullScreen(true);
             primaryStage.show(); //Display the primary stage
         } catch (IOException e) {
             e.printStackTrace();

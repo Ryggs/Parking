@@ -1,20 +1,19 @@
 package parking.bar.controller;
-
+import parking.bar.model.Bar;
+import parking.bar.model.TicketDAO;
+//javaFX
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import parking.bar.model.Ticket;
-import parking.bar.model.TicketDAO;
-
+//sql
 import java.sql.SQLException;
 
 
 public class BarExitController {
 
     private String code = "";   // max number is 10 digits long ticketNo + 2 ditigs controlCode
-
-
+    Bar barChecker;
 
     @FXML
     private TextArea resultArea;
@@ -25,40 +24,48 @@ public class BarExitController {
     //OpenBar
     @FXML
     private void openBar(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        //TODO odliczanie czasu na wyjazd, zapis do pliku
+        setInfoToResultArea("Wait until the bar is closed");
+        if(Bar.isBarClosed) {
+            setInfoToResultArea("Enter correct code");
+            if (code.length() > 2) // 1 digit ticketNo + 2 digits controlCode
+                try {
+                    // getCode().substring(0, getCode().length() - 2) ticketNo
+                    // getCode().substring(getCode().length() - 2, getCode().length()) controlCode
 
-        setInfoToResultArea("Enter correct code");
-        System.out.println("OpenBar");
-        if (code.length() > 2) // 1 digit ticketNo + 2 digits controlCode
-            try {
-                // getCode().substring(0, getCode().length() - 2) ticketNo
-                // getCode().substring(getCode().length() - 2, getCode().length()) controlCode
+                    boolean canOpenBar = TicketDAO.canTicketExit(Integer.parseInt(getCode().substring(0, getCode().length() - 2)),
+                            Integer.parseInt(getCode().substring(getCode().length() - 2, getCode().length())));
+                    System.out.println("ticketNo: " + Integer.parseInt(getCode().substring(0, getCode().length() - 2)));
+                    System.out.println("controlCode: " + Integer.parseInt(getCode().substring(getCode().length() - 2, getCode().length())));
 
-                boolean canOpenBar = TicketDAO.canTicketExit(Integer.parseInt(getCode().substring(0, getCode().length() - 2)),
-                        Integer.parseInt(getCode().substring(getCode().length() - 2, getCode().length())));
-                System.out.println("ticketNo: " + Integer.parseInt(getCode().substring(0, getCode().length() - 2)));
-                System.out.println("controlCode: " + Integer.parseInt(getCode().substring(getCode().length() - 2,getCode().length())));
+                    if (canOpenBar) {
+                        setInfoToResultArea("Bar is opened for 30 sec\nHave a nice day!");
 
-                if (canOpenBar) {
-                    setInfoToResultArea("Bar is opened for 30 sec\nHave a nice day!");
+                        //open Bar
+                        Bar.openBar();
+
+                        //run thread to check for bar status
+                        barChecker = new Bar();
+                        barChecker.start();
+
+                        setCode("");
+                        showCode();
+                    } else {
+                        setInfoToResultArea("Error occured\nYou didn't pay your ticket\nor code you have entered is incorrect");
+                        setCode("");
+                        showCode();
+                    }
+
+                } catch (SQLException e) {
+                    System.out.println("Error occurred while checking ticket in DB.\n" + e);
+                    setInfoToResultArea("Error occured with our DataBase\nContact with administrator, please");
+                    //throw e;
+                } catch (java.lang.NumberFormatException e) {
+                    System.out.println("Error occurred while transforming code.\n" + e);
+                    setInfoToResultArea("Error: Your code is not correct\nEnter right code");
                     setCode("");
-                    showCode();
-                } else {
-                    setInfoToResultArea("Error occured\nYou didn't pay your ticket\nor code you have entered is incorrect");
-                    setCode("");
-                    showCode();
+                    //showCode();
                 }
-
-            } catch (SQLException e) {
-                System.out.println("Error occurred while checking ticket in DB.\n" + e);
-                setInfoToResultArea("Error occured with our DataBase\nContact with administrator, please");
-                //throw e;
-            } catch(java.lang.NumberFormatException e){
-                System.out.println("Error occurred while transforming code.\n" + e);
-                setInfoToResultArea("Error: Your code is not correct\nEnter right code");
-                setCode("");
-                //showCode();
-            }
+        }
     }
 
     //KeyC erase last digit

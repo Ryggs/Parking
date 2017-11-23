@@ -50,9 +50,10 @@ public class BarEnterController{
                 String newInfo2 = "\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0, 19);
                 String newInfo3 = "\nMasz 30sek na wjazd";
 
-                System.out.println(newInfo);
-                System.out.println(newInfo2);
-                System.out.println(newInfo3);
+                System.out.print(newInfo);
+                System.out.print(newInfo2);
+                System.out.print(newInfo3);
+                System.out.println("");
                 setInfoToTextArea(newInfo + newInfo2 + newInfo3);
 
                 //set up ticket
@@ -69,15 +70,14 @@ public class BarEnterController{
                 printingArea.appendText("\nPrzed wyjazdem opłać w automacie");
 
                 //Print ticket
-                print(printingArea);
+                if(print(printingArea)) {
+                    //open Bar
+                    Bar.openBar();
 
-                //open Bar
-                Bar.openBar();
-
-                //run thread to check for bar status
-                barChecker = new Bar();
-                barChecker.start();
-
+                    //run thread to check for bar status
+                    barChecker = new Bar();
+                    barChecker.start();
+                }
             } catch (SQLException e) {
                 System.out.println("Error occurred while getting new ticket from DB.\n" + e);
                 throw e;
@@ -85,7 +85,7 @@ public class BarEnterController{
         }
     }
 
-    private void print(Node node)
+    private boolean print(Node node)
     {
         // Create a printer job for the default printer
         PrinterJob printerJob = PrinterJob.createPrinterJob();
@@ -107,15 +107,18 @@ public class BarEnterController{
             if (printed){
                 // End the printer job
                 printerJob.endJob();
+                return true;
             }
             else{
                 // Write Error Message
                 resultArea.appendText("\nPrinting failed.\nThe printer is damaged\nPlease contact with administrator");
+                return false;
             }
         }
         else{
             // Write Error Message
             resultArea.appendText("\nPrinting failed.\nThere is no printer");
+            return false;
         }
     }
 

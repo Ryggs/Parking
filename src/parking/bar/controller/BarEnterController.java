@@ -1,19 +1,33 @@
 package parking.bar.controller;
-
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
 import parking.bar.model.Ticket;
 import parking.bar.model.TicketDAO;
-
+import parking.bar.model.Bar;
+//javaFX
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.TextArea;
+import javafx.scene.text.Font;
+//printer
+import javafx.print.PageOrientation;
+import javafx.print.PageLayout;
+import javafx.print.Paper;
+import javafx.print.Printer;
+import javafx.print.PrinterJob;
+import com.sun.javafx.print.PrintHelper;
+import com.sun.javafx.print.Units;
+//sql
 import java.sql.SQLException;
 
-
-
-public class BarEnterController {
+public class BarEnterController{
+    private boolean canGetTicket = true;
+    Bar barChecker;
 
     @FXML
     private TextArea resultArea;
+
+    @FXML
+    final TextArea printingArea = new TextArea();
 
     //Set information to Text Area
     @FXML
@@ -24,22 +38,88 @@ public class BarEnterController {
     //get new ticket from DataBase
     @FXML
     private void getTicket(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
+        setInfoToTextArea("Zaczekaj aż szlaban opadnie");
+        if(Bar.isBarClosed)
+            canGetTicket = true;
+        if(canGetTicket) {
+            canGetTicket = false;
+            System.out.println("Pobieram nowy bilet");
+            try {
+                Ticket newTicket = TicketDAO.getNewTicket();
+                String newInfo = "Twój nr biletu to " + newTicket.getTicketNo();
+                String newInfo2 = "\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0, 19);
+                String newInfo3 = "\nMasz 30sek na wjazd";
 
-        System.out.println("Pobieram nowy bilet");
-        try {
-            Ticket newTicket = TicketDAO.getNewTicket();
-            String newInfo = "Twój nr biletu to " + newTicket.getTicketNo() + "\nMasz 30sek na wjazd";
-            String newInfo2 = "\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0,19);
+                System.out.print(newInfo);
+                System.out.print(newInfo2);
+                System.out.print(newInfo3);
+                System.out.println("");
+                setInfoToTextArea(newInfo + newInfo2 + newInfo3);
 
-            System.out.println(newInfo);
-            System.out.println(newInfo2);
-            setInfoToTextArea(newInfo + newInfo2);
+                //set up ticket
+                printingArea.setFont(Font.font(8));
+                printingArea.setPrefColumnCount(20);
+                printingArea.setPrefRowCount(7);
+                //set ticket info
+                printingArea.setText("********* Parking javaPark *********");
+                printingArea.appendText("\n======================");
+                printingArea.appendText("\nTwój nr biletu to " + newTicket.getTicketNo());
+                printingArea.appendText("\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0, 19));
+                printingArea.appendText("\n======================");
+                printingArea.appendText("\nZachowaj ten bilet");
+                printingArea.appendText("\nPrzed wyjazdem opłać w automacie");
 
-        } catch (SQLException e){
-            System.out.println("Error occurred while getting new ticket from DB.\n" + e);
-            throw e;
+                //Print ticket
+                if(print(printingArea)) {
+                    //open Bar
+                    Bar.openBar();
+
+                    //run thread to check for bar status
+                    barChecker = new Bar();
+                    barChecker.start();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error occurred while getting new ticket from DB.\n" + e);
+                throw e;
+            }
         }
     }
 
+    private boolean print(Node node)
+    {
+        // Create a printer job for the default printer
+        PrinterJob printerJob = PrinterJob.createPrinterJob();
+
+        if (printerJob != null){
+            // Get The Printer
+            Printer printer = printerJob.getPrinter();
+
+            // Create Paper
+            Paper ticketPaper = PrintHelper.createPaper("Ticket50x100", 50, 100, Units.MM);
+
+            // Create the Page Layout of the Printer
+            // PageLayout pageLayout = printer.createPageLayout(ticketPaper, PageOrientation.LANDSCAPE,Printer.MarginType.EQUAL);
+            PageLayout pageLayout = printer.createPageLayout(ticketPaper,PageOrientation.PORTRAIT,2.0,2.0,2.0,2.0);
+
+            // Print the node using ticketPaper
+            boolean printed = printerJob.printPage(pageLayout, node);;
+
+            if (printed){
+                // End the printer job
+                printerJob.endJob();
+                return true;
+            }
+            else{
+                // Write Error Message
+                resultArea.appendText("\nPrinting failed.\nThe printer is damaged\nPlease contact with administrator");
+                return false;
+            }
+        }
+        else{
+            // Write Error Message
+            resultArea.appendText("\nPrinting failed.\nThere is no printer");
+            return false;
+        }
+    }
 
 }

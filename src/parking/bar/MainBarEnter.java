@@ -33,7 +33,6 @@ public class MainBarEnter extends Application {
 
         //3) Display the EnterBar View
         showEnterBarView();
-
     }
 
     //Initializes the root layout.
@@ -51,6 +50,7 @@ public class MainBarEnter extends Application {
             //Third, show the primary stage
             primaryStage.setFullScreenExitHint("ENTER BAR");
             primaryStage.setFullScreen(true);
+            primaryStage.setAlwaysOnTop(true);
             primaryStage.show(); //Display the primary stage
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,7 +71,6 @@ public class MainBarEnter extends Application {
             e.printStackTrace();
         }
     }
-
 
     public static void main(String[] args) {
         launch(args);

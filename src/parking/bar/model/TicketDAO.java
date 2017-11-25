@@ -43,21 +43,28 @@ public class TicketDAO {
 //*******************************
 //Check if car can exit within 15 minutes
 //*******************************
-    public static boolean isTicketPaid(int ticketNo) throws SQLException, ClassNotFoundException {
+    public static boolean canTicketExit(int ticketNo, int controlCode) throws SQLException, ClassNotFoundException {
 
-        String stmt = "CALL is_ticket_paid(" + ticketNo + ")";
-
+        String stmt = "CALL check_ticket_can_exit(" + ticketNo + "," + controlCode + ")";
+        System.out.println(stmt);
         try {
             //Get ResultSet from dbExecuteQuery method
             ResultSet rsTicket = DBUtil.dbExecuteQuery(stmt);
             if (rsTicket.next()) {
-                if (rsTicket.getString(1) == "DONE")
+                if (rsTicket.getString("Status").equals("DONE")) {
+                    System.out.println(rsTicket.getString("Status"));
+                    System.out.println("DONE ticket can leave");
                     return true;
-                else
+                }
+                else {
+                    System.out.println("Error ticket can't leave");
                     return false;
+                }
             }
-            else
+            else {
+                System.out.println("Can't get ticket");
                 return false;
+            }
         } catch (SQLException e) {
             System.out.println("While checking if ticket is paid an error occurred: " + e);
             //Return exception

@@ -152,21 +152,24 @@ begin
 SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
 if (@vEntryTime is NOT NULL) then
 	SET @vNow = Now();
+	SET @vControlCode = (SELECT ROUND(((99 - 10 -1) * RAND() + 10), 0)); #Get random control code from 10 to 99
 	if(vPaymentType = 'cash') then
 		UPDATE ticket SET PaymentType='cash' WHERE ticket.TicketNo = vTicketNo;
 		UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
-		SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+		UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
+		SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
 	elseif(vPaymentType = 'subscription') then
 		SET @vUserNo = (SELECT UserNo from user_sub where user_sub.SubNo = vSubNo);
 		if(@vUserNo is NOT NULL) then
 		
 			#TODO ERROR This user used his subscription to pay for another ticket at the same time // zabezpieczenie przeciwcebulowe
-		
-		
+					
 			INSERT INTO user_ticket(TicketNo, UserNo) VALUES(vTicketNo, @vUserNo);
 			UPDATE ticket SET PaymentType='subscription' WHERE ticket.TicketNo = vTicketNo;
 			UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
-			SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType";
+			UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
+			
+			SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
 		else
 			SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
 		end if;
@@ -224,7 +227,39 @@ CALL get_money("0001-01-01 00:00:00", "9999-12-31 23:59:59");
 #====================
 
 #=========================================================================================================
-# 												 ========= 	
+# sprawdź czy można wyjechać (15min na wyjazd)	 ========= 	check_ticket_can_exit	return 0 if user can leave parking
 #=========================================================================================================
+DELIMITER //
+CREATE PROCEDURE check_ticket_can_exit(vTicketNo int, vControlCode int)
+begin
+SET @vPaymentTime = (SELECT PaymentTime from ticket where TicketNo = vTicketNo);
+if (@vPaymentTime is NOT NULL) then
+	SET @vControlCodeDB = (SELECT ControlCode from ticket where TicketNo = vTicketNo);
+	if(vControlCode = @vControlCodeDB) then
+		SET @vLeaveTime = (SELECT LeaveTime from ticket where TicketNo = vTicketNo);
+		if(@vLeaveTime is NULL) then
+			SET @vNow = Now();
+			SET @vDuration = (SELECT (TIMEDIFF(@vNow, @vPaymentTime)));
+			if(@vDuration < "00:15:00") then
+				#UPDATE ticket SET LeaveTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+				SELECT "DONE" as "Status" , "0" as "ErrType", "check_ticket_can_exit" as "Fun","Ticket LeaveTime added corectly" as "Info";
+			else
+				SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "Your 15 min delay has gone. You have to pay ticket again for additional minutes" as "Info";
+			end if;
+		else
+			SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "This ticket has left parking. You can not open bar again" as "Info";
+		end if;
+	else
+		SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "This ControlCode is incorrect" as "Info";
+	end if;
+else
+	SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "This TicketNo is not correct or Ticket hasn't been paid" as "Info";
+end if;
+end
+//
+DELIMITER ;
 
+#====================
+CALL check_ticket_can_exit(1);
+#====================
 

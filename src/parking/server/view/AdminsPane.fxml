@@ -15,7 +15,7 @@
 
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.server.controller.AdminsPaneController">
     <children>
-        <Button layoutX="287.0" layoutY="488.0" mnemonicParsing="false" onAction="#backToMenu" text="%app.backToMenu" />
+        <Button layoutX="287.0" layoutY="488.0" mnemonicParsing="false" onAction="#backToMenu" text="%app.backToMenu" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="60.0" />
       <VBox fx:id="addAdminVbox" layoutX="61.0" layoutY="40.0" prefHeight="143.0" prefWidth="700.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="40.0">
          <children>
               <Label alignment="CENTER" text="%admin.mainLabel" />
@@ -63,7 +63,7 @@
             </HBox>
          </children>
       </VBox>
-      <TableView fx:id="userTableView" editable="true" layoutX="62.0" layoutY="234.0" prefHeight="200.0" prefWidth="800.0" tableMenuButtonVisible="true" AnchorPane.leftAnchor="60.0">
+      <TableView fx:id="userTableView" editable="true" layoutX="62.0" layoutY="234.0" prefHeight="200.0" prefWidth="800.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="266.0" AnchorPane.leftAnchor="60.0">
         <columns>
           <TableColumn fx:id="idColumn" editable="false" prefWidth="60.0" text="Id" />
           <TableColumn fx:id="loginColumn" onEditCommit="#editColumnItem" prefWidth="125.0" text="%admin.login" />

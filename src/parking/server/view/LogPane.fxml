@@ -2,11 +2,28 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.server.controller.LogPaneController">
     <children>
-        <Label layoutX="151.0" layoutY="107.0" text="History will be here" />
-        <Button layoutX="287.0" layoutY="488.0" mnemonicParsing="false" onAction="#backToMenu" text="%app.backToMenu" />
+        <Label layoutX="129.0" layoutY="84.0" text="%log.mainLabel" AnchorPane.leftAnchor="60.0">
+         <font>
+            <Font size="18.0" />
+         </font></Label>
+        <Button layoutX="60.0" layoutY="632.0" mnemonicParsing="false" onAction="#backToMenu" text="%app.backToMenu" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="60.0" />
+      <TableView fx:id="logTableView" layoutX="63.0" layoutY="150.0" prefHeight="400.0" prefWidth="800.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="150.0">
+        <columns>
+          <TableColumn fx:id="ticketNoColumn" prefWidth="50.0" text="%log.number" />
+          <TableColumn fx:id="entryTimeColumn" prefWidth="150.0" text="%log.entryTime" />
+            <TableColumn fx:id="leaveTimeColumn" prefWidth="150.0" text="%log.leaveTime" />
+            <TableColumn fx:id="paymentTimeColumn" prefWidth="150.0" text="%log.paymentTime" />
+            <TableColumn fx:id="paymentTypeColumn" prefWidth="100.0" text="%log.paymentType" />
+            <TableColumn fx:id="chargeColumn" prefWidth="100.0" text="%log.charge" />
+            <TableColumn fx:id="controlCodeColumn" prefWidth="100.0" text="%log.controlCode" />
+        </columns>
+      </TableView>
     </children>
 </AnchorPane>

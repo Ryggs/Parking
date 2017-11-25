@@ -156,10 +156,10 @@ public class AdminsPaneController {
 
         // UserID of account to be edited
         int index = (e.getTableView().getItems().get(e.getTablePosition().getRow()).getUserNo());
-        System.out.println(index);
+//        System.out.println(index);
 
         Object newValue = e.getNewValue();
-        System.out.println(newValue.toString());  // e.getNewValue().toString() nie działą
+//        System.out.println(newValue.toString());  // e.getNewValue().toString() nie działą
 
          AdminDAO.update(index, colName, newValue);
     }

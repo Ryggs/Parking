@@ -63,16 +63,16 @@
             </HBox>
          </children>
       </VBox>
-      <TableView fx:id="userTableView" layoutX="62.0" layoutY="234.0" prefHeight="200.0" prefWidth="800.0" AnchorPane.leftAnchor="60.0">
+      <TableView fx:id="userTableView" editable="true" layoutX="62.0" layoutY="234.0" prefHeight="200.0" prefWidth="800.0" tableMenuButtonVisible="true" AnchorPane.leftAnchor="60.0">
         <columns>
-          <TableColumn fx:id="idColumn" prefWidth="60.0" text="Id" />
-          <TableColumn fx:id="loginColumn" prefWidth="125.0" text="%admin.login" />
-            <TableColumn fx:id="passColumn" prefWidth="75.0" text="%admin.pass" />
-            <TableColumn fx:id="permissionColumn" text="%admin.perm" />
-            <TableColumn fx:id="firstNameColumn" prefWidth="100.0" text="%admin.name" />
-            <TableColumn fx:id="secondNameColumn" prefWidth="100.0" text="%admin.surname" />
-            <TableColumn fx:id="phoneColumn" prefWidth="100.0" text="%admin.phone" />
-            <TableColumn fx:id="emailColumn" prefWidth="100.0" text="%admin.email" />
+          <TableColumn fx:id="idColumn" editable="false" prefWidth="60.0" text="Id" />
+          <TableColumn fx:id="loginColumn" onEditCommit="#editColumnItem" prefWidth="125.0" text="%admin.login" />
+            <TableColumn fx:id="passColumn" onEditCommit="#editColumnItem" prefWidth="75.0" text="%admin.pass" />
+            <TableColumn fx:id="permissionColumn" onEditCommit="#editColumnItem" text="%admin.perm" />
+            <TableColumn fx:id="firstNameColumn" onEditCommit="#editColumnItem" prefWidth="100.0" text="%admin.name" />
+            <TableColumn fx:id="secondNameColumn" onEditCommit="#editColumnItem" prefWidth="100.0" text="%admin.surname" />
+            <TableColumn fx:id="phoneColumn" onEditCommit="#editColumnItem" prefWidth="100.0" text="%admin.phone" />
+            <TableColumn fx:id="emailColumn" onEditCommit="#editColumnItem" prefWidth="100.0" text="%admin.email" />
         </columns>
       </TableView>
 

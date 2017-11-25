@@ -8,6 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.converter.IntegerStringConverter;
 import parking.server.model.Admin;
 import parking.server.model.AdminDAO;
 
@@ -83,15 +85,38 @@ public class AdminsPaneController {
         phoneColumn.setCellValueFactory( cellData -> cellData.getValue().phoneProperty().asObject());
         emailColumn.setCellValueFactory(cellData -> cellData.getValue().emailProperty());
 
-        refreshTableView();
-    }
 
-    public void refreshTableView(){
+        // Make columns editable
+        //idColumn.setCellFactory(TextFieldTableCell.<Admin, Integer>forTableColumn(new IntegerStringConverter()));
+        loginColumn.setCellFactory(TextFieldTableCell.<Admin>forTableColumn());
+        passColumn.setCellFactory(TextFieldTableCell.<Admin>forTableColumn());
+        permissionColumn.setCellFactory(TextFieldTableCell.<Admin>forTableColumn());
+        firstNameColumn.setCellFactory(TextFieldTableCell.<Admin>forTableColumn());
+        secondNameColumn.setCellFactory(TextFieldTableCell.<Admin>forTableColumn());
+        phoneColumn.setCellFactory(TextFieldTableCell.<Admin,Integer>forTableColumn(new IntegerStringConverter()));
+        emailColumn.setCellFactory(TextFieldTableCell.<Admin>forTableColumn());
+
+        idColumn.setEditable(true);
+
+
+//        try {
+//            personData = AdminDAO.getAllUsers();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
         try {
-            userTableView.setItems(AdminDAO.getAllUsers());
+            refreshTableView();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public void refreshTableView() throws SQLException {
+
+           userTableView.setItems(AdminDAO.getAllUsers());
+
+
     }
 
 
@@ -111,7 +136,68 @@ public class AdminsPaneController {
     Integer phone = Integer.parseInt(phoneTextField.getText());
     String email = emailTextField.getText();
 
+
+
     AdminDAO.addNewUser(login,pass,"admin",firstName,secondName,phone,email);
+
+
         refreshTableView();
     }
+//firstname
+    public void editColumnItem(TableColumn.CellEditEvent<Admin, String> e) throws SQLException {
+
+
+        String colId = e.getTableColumn().getId();
+        String colName = convertColNames(colId);
+        System.out.println(colId);
+        System.out.println(colName);
+
+
+
+        // UserID of account to be edited
+        int index = (e.getTableView().getItems().get(e.getTablePosition().getRow()).getUserNo());
+        System.out.println(index);
+
+        Object newValue = e.getNewValue();
+        System.out.println(newValue.toString());  // e.getNewValue().toString() nie działą
+
+         AdminDAO.update(index, colName, newValue);
+    }
+
+    /**
+     * Method converts TableView columns names to corresponding in Database
+     * @param colId - column name in TableView
+     *
+     * @return - column name in Database
+     */
+    private String convertColNames(String colId) {
+        String colName = "";
+        switch (colId){
+            case "loginColumn":
+                    colName = "UserLogin";
+                    break;
+            case "passColumn":
+                    colName = "UserPass";
+                    break;
+            case "permissionColumn":
+                    colName = "PermType";
+                    break;
+            case "firstNameColumn":
+                    colName = "Name";
+                    break;
+            case "secondNameColumn":
+                    colName = "Surname";
+                    break;
+            case "phoneColumn":
+                    colName = "Phone";
+                    break;
+            case "emailColumn":
+                    colName = "Email";
+                    break;
+
+        }
+        return colName;
+    }
+
+
 }

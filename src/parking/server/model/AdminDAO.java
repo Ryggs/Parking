@@ -69,4 +69,14 @@ public class AdminDAO {
 
 
     }
+
+    public static void update(int index, String columnName, Object newValue) throws SQLException {
+
+
+        String stmt = "UPDATE userparking SET `"+ columnName +"` = '" +newValue+ "' WHERE `UserNo` = " + index;
+
+        DBUtil.dbExecuteUpdate(stmt);
+
+
+    }
 }

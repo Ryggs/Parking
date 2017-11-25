@@ -104,7 +104,7 @@ public class DBUtil {
 
         try {
             dbConnect();
-
+            System.out.println(sqlStmt);
             stmt = conn.createStatement();
             stmt.executeUpdate(sqlStmt);
         } catch (SQLException e) {

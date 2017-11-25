@@ -123,4 +123,20 @@ public class Admin {
     public void setEmail(String email) {
         this.email.set(email);
     }
+
+
+    @Override
+    public String toString() {
+        return "Admin{" +
+                "userNo=" + userNo +
+                ", userLogin=" + userLogin +
+                ", userPass=" + userPass +
+                ", permType=" + permType +
+                ", firstName=" + firstName +
+                ", lastName=" + lastName +
+                ", phone=" + phone +
+                ", email=" + email +
+                '}';
+    }
 }
+

@@ -63,7 +63,7 @@
             </HBox>
          </children>
       </VBox>
-      <TableView fx:id="userTableView" editable="true" layoutX="62.0" layoutY="234.0" prefHeight="200.0" prefWidth="800.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="266.0" AnchorPane.leftAnchor="60.0">
+      <TableView fx:id="userTableView" editable="true" layoutX="62.0" layoutY="234.0" prefHeight="400.0" prefWidth="800.0" tableMenuButtonVisible="true" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="200.0">
         <columns>
           <TableColumn fx:id="idColumn" editable="false" prefWidth="60.0" text="Id" />
           <TableColumn fx:id="loginColumn" onEditCommit="#editColumnItem" prefWidth="125.0" text="%admin.login" />

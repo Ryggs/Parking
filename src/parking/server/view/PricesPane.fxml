@@ -14,11 +14,13 @@
             <Font size="18.0" />
          </font></Label>
       <Button layoutX="287.0" layoutY="488.0" mnemonicParsing="false" onAction="#backToMenu" text="%app.backToMenu" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="60.0" />
-      <TableView fx:id="pricesTableView" editable="true" layoutX="87.0" layoutY="160.0" prefHeight="300.0" prefWidth="375.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="200.0">
+      <TableView fx:id="pricesTableView" editable="true" layoutX="87.0" layoutY="160.0" prefHeight="300.0" prefWidth="575.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="200.0">
         <columns>
           <TableColumn fx:id="idColumn" prefWidth="75.0" text="Id" />
-          <TableColumn fx:id="typeColumn" prefWidth="150.0" text="%prices.type" />
-            <TableColumn fx:id="priceColumn" onEditCommit="#priceEdit" prefWidth="150.0" text="%prices.price" />
+            <TableColumn fx:id="nameColumn" onEditCommit="#editColumnItem" prefWidth="100.0" text="%price.name" />
+          <TableColumn fx:id="typeColumn" onEditCommit="#editColumnItem" prefWidth="150.0" text="%prices.type" />
+            <TableColumn fx:id="priceColumn" onEditCommit="#editColumnItem" prefWidth="150.0" text="%prices.price" />
+            <TableColumn fx:id="durationColumn" onEditCommit="#editColumnItem" prefWidth="100.0" text="%price.duration" />
         </columns>
       </TableView>
    </children>

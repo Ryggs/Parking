@@ -22,12 +22,14 @@ public class PriceDAO {
 
         while (rs.next()) {
             int id = rs.getInt(1);
-            String priceType = rs.getString(2);
-            Integer pricePrice = rs.getInt(3);
+            String priceName = rs.getString(2);
+            String priceType = rs.getString(3);
+            Integer pricePrice = rs.getInt(4);
+            Integer priceDuration = rs.getInt(5);
 
 
 
-            Price p = new Price(id, priceType, pricePrice);
+            Price p = new Price(id, priceName, priceType, pricePrice, priceDuration);
             list.add(p);
         }
         return list;
@@ -35,7 +37,7 @@ public class PriceDAO {
 
     }
 
-    public static void update(int index, String columnName, int newValue) throws SQLException {
+    public static void update(int index, String columnName, String newValue) throws SQLException {
 
 
         String stmt = "UPDATE prices SET `"+ columnName +"` = '" +newValue+ "' WHERE `id` = " + index;

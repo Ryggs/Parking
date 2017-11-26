@@ -99,7 +99,7 @@ public class BarEnterController{
 
             // Create the Page Layout of the Printer
             // PageLayout pageLayout = printer.createPageLayout(ticketPaper, PageOrientation.LANDSCAPE,Printer.MarginType.EQUAL);
-            PageLayout pageLayout = printer.createPageLayout(ticketPaper,PageOrientation.PORTRAIT,2.0,2.0,2.0,2.0);
+            PageLayout pageLayout = printer.createPageLayout(ticketPaper,PageOrientation.PORTRAIT,8.0,2.0,8.0,2.0);
 
             // Print the node using ticketPaper
             boolean printed = printerJob.printPage(pageLayout, node);;

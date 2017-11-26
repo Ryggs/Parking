@@ -48,6 +48,7 @@ CALL new_user("Klos", "Labs", "user", "Klos", "Labs", "111222333", "vip@kk");
 #=========================================================================================================
 # procedura wykupywania abonamentu        		 ========= buy_sub
 #=========================================================================================================
+#NIEAKTUANE DO POPRAWY PO ZMIANIE TABELI PRICES
 DELIMITER //
 CREATE PROCEDURE buy_sub(vLogin varchar(50), vType enum('30days','90days','180days','1year','unlimited'), vStartTime datetime)
 begin

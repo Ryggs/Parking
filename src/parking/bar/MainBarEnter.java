@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -50,7 +51,8 @@ public class MainBarEnter extends Application {
             //Third, show the primary stage
             primaryStage.setFullScreenExitHint("ENTER BAR");
             primaryStage.setFullScreen(true);
-            primaryStage.setAlwaysOnTop(true);
+            //primaryStage.setAlwaysOnTop(true);
+            primaryStage.initModality(Modality.APPLICATION_MODAL);
             primaryStage.show(); //Display the primary stage
         } catch (IOException e) {
             e.printStackTrace();

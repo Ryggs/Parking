@@ -6,7 +6,7 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.parkingmeter.controller.RootLayoutController">
    <children>
-      <Button layoutX="92.0" layoutY="275.0" mnemonicParsing="false" onAction="#buyTicket" prefHeight="150.0" prefWidth="200.0" text="%main.payTicket" AnchorPane.leftAnchor="75.0" AnchorPane.topAnchor="200.0" />
+      <Button layoutX="92.0" layoutY="275.0" mnemonicParsing="false" onAction="#payTicket" prefHeight="150.0" prefWidth="200.0" text="%main.payTicket" AnchorPane.leftAnchor="75.0" AnchorPane.topAnchor="200.0" />
       <Button layoutX="435.0" layoutY="308.0" mnemonicParsing="false" onAction="#buySub" prefHeight="150.0" prefWidth="200.0" text="%main.buySub" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="200.0" />
       <ButtonBar buttonMinWidth="50.0" layoutX="534.0" layoutY="39.0" prefHeight="40.0" prefWidth="25.0" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="30.0">
          <buttons>

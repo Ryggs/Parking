@@ -29,8 +29,8 @@
                   <Font size="24.0" />
                </font>
             </Label>
-            <Label text="%login.username" GridPane.rowIndex="1" />
-            <Label text="%login.password" GridPane.rowIndex="2" />
+            <Label text="%buy.username" GridPane.rowIndex="1" />
+            <Label text="%buy.password" GridPane.rowIndex="2" />
             <TextField fx:id="usernameTextField" promptText="Type your username" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <PasswordField fx:id="passwordField" onAction="#login" promptText="Type your password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>

@@ -27,7 +27,7 @@ public class Main extends Application {
         loginInstance.showLoginWindow(loginStage);
 
         //AdminDAO.addNewUser("test1233","test","admin","test","test",123,"t@t");
-        DBUtil.dbConnect();
+     //   DBUtil.dbConnect();
 
     }
 

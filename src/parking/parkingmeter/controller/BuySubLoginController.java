@@ -1,7 +1,6 @@
 package parking.parkingmeter.controller;
 
 
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,12 +18,10 @@ import javafx.stage.Stage;
 import parking.parkingmeter.model.PriceDAO;
 import parking.parkingmeter.model.SubDAO;
 import parking.parkingmeter.utils.FXMLUtils;
-import parking.server.model.LoginDAO;
+import parking.util.LoginDAO;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 
 public class BuySubLoginController {

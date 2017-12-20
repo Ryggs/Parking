@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import parking.server.model.LoginDAO;
+import parking.util.LoginDAO;
 
 import java.io.IOException;
 import java.sql.SQLException;

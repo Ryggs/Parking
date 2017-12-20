@@ -1,4 +1,4 @@
-package parking.server.model;
+package parking.util;
 
 import parking.util.DBUtil;
 

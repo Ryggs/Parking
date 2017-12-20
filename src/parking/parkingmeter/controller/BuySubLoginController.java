@@ -1,10 +1,14 @@
 package parking.parkingmeter.controller;
 
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -17,6 +21,7 @@ import parking.parkingmeter.model.SubDAO;
 import parking.parkingmeter.utils.FXMLUtils;
 import parking.server.model.LoginDAO;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -30,6 +35,7 @@ public class BuySubLoginController {
     private int valueToPay;
     private int valuePaid;
     private String type;
+    private final String BUY_SUB_DETAILS_FXML_PATH = "../view/BuySubDetailsPane.fxml";
     
     @FXML
     private ChoiceBox<String> durationChoiceBox;
@@ -141,11 +147,36 @@ public class BuySubLoginController {
                 infoLabel.setText(bundle.getString("buy.returnMoney") + change/100.0);
             }
 
+            // Add subscription to DB
             int flag = SubDAO.addSub(username, type);
             if (flag == 0) {
                 infoLabel.setTextFill(Color.rgb(0, 255, 0));
                 infoLabel.setText(bundle.getString("buy.ok"));
             }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(BUY_SUB_DETAILS_FXML_PATH));
+            loader.setResources(FXMLUtils.getResourceBundle());
+            Parent root = null;
+            try {
+                root = loader.load();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            backToMenu(event);
+
+
+
+            BuySubDetailsController controller = loader.getController();
+            controller.setUser(username);
+            controller.fillTextField();
+            Scene scene = new Scene(root);
+            Stage stage1 = new Stage();
+            stage1.setScene(scene);
+            stage1.show();
+
+
+
+
         }
 
 

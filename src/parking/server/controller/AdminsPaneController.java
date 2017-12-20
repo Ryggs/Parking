@@ -4,10 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.IntegerStringConverter;
 import parking.server.model.Admin;
@@ -70,6 +67,10 @@ public class AdminsPaneController {
     @FXML
     private TableColumn<Admin, String> emailColumn;
 
+    @FXML
+    private ChoiceBox<String> permChoiceBox;
+
+
     private Admin admin;
 
     private ObservableList<Admin> personData = FXCollections.observableArrayList();
@@ -95,6 +96,9 @@ public class AdminsPaneController {
         secondNameColumn.setCellFactory(TextFieldTableCell.<Admin>forTableColumn());
         phoneColumn.setCellFactory(TextFieldTableCell.<Admin,Integer>forTableColumn(new IntegerStringConverter()));
         emailColumn.setCellFactory(TextFieldTableCell.<Admin>forTableColumn());
+
+        ObservableList<String> perms = FXCollections.observableArrayList("admin","user");
+        permChoiceBox.setItems(perms);
 
         idColumn.setEditable(true);
 
@@ -131,6 +135,7 @@ public class AdminsPaneController {
     public void addNewAdmin(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
     String login = loginTextField.getText();
     String pass = passTextField.getText();
+    String perm = permChoiceBox.getValue();
     String firstName = firstNameTextField.getText();
     String secondName = lastNameTextField.getText();
     Integer phone = Integer.parseInt(phoneTextField.getText());
@@ -138,7 +143,7 @@ public class AdminsPaneController {
 
 
 
-    AdminDAO.addNewUser(login,pass,"admin",firstName,secondName,phone,email);
+    AdminDAO.addNewUser(login,pass,perm,firstName,secondName,phone,email);
 
 
         refreshTableView();

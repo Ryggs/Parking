@@ -55,14 +55,14 @@ public class AdminDAO {
             int userNo = rs.getInt(1);
             String userLogin = rs.getString(2);
             String userPass = rs.getString(3);
-            //String permType = rs.getString(3);
+            String permType = rs.getString(4);
             String firstName = rs.getString(5);
             String lastName = rs.getString(6);
             int phone = rs.getInt(7);
             String email = rs.getString(8);
 
 
-            Admin a = new Admin(userNo,userLogin,userPass,"admin",firstName,lastName,phone,email);
+            Admin a = new Admin(userNo,userLogin,userPass,permType,firstName,lastName,phone,email);
             list.add(a);
         }
         return list;

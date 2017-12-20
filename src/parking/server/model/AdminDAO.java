@@ -24,7 +24,7 @@ public class AdminDAO {
             //Get ResultSet from dbExecuteQuery method
             ResultSet rs= DBUtil.dbExecuteQuery(stmt);
               if (rs.next()) {
-                    if (rs.getString(1) == "DONE")
+                    if (rs.getString(1).equals("DONE"))
                     return true;
                 else
                     System.err.println("ErrType: " + rs.getInt(2) + "\nInfo: " + rs.getString(4) );

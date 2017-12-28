@@ -1,42 +1,35 @@
 package parking.parkingmeter.controller;
 
-
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import parking.parkingmeter.model.PriceDAO;
-import parking.parkingmeter.model.SubDAO;
+import parking.parkingmeter.model.TicketCharge;
+import parking.parkingmeter.model.TicketDAO;
+import parking.parkingmeter.model.TicketPay;
 import parking.parkingmeter.utils.FXMLUtils;
-import parking.util.LoginDAO;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
-public class BuySubLoginController {
-    RootLayoutController rootController;
-    private String username;
-    private String password;
-    private ResourceBundle bundle = FXMLUtils.getResourceBundle();
+public class PayTicketCashController {
     private int valueToPay;
     private int valuePaid;
-    private String type;
-    private final String BUY_SUB_DETAILS_FXML_PATH = "../view/BuySubDetailsPane.fxml";
-    
-    @FXML
-    private ChoiceBox<String> durationChoiceBox;
+    private RootLayoutController rootController;
 
+    private ResourceBundle bundle = FXMLUtils.getResourceBundle();
+    private TicketCharge ticketCharge;
+
+    private final String PAY_CASH_DETAILS_PANE =  "../view/PayTicketCashDetails.fxml";
     @FXML
     private AnchorPane loggedPane;
 
@@ -47,31 +40,17 @@ public class BuySubLoginController {
     private Label valuePaidLabel;
 
     @FXML
+    private GridPane money;
+
+    @FXML
     private Label infoLabel;
-    
 
     @FXML
-    private TextField usernameTextField;
-
-    @FXML
-    private PasswordField passwordField;
+    private TextField ticketNoTextField;
 
     @FXML
     private Label message;
 
-    @FXML
-    void durationChosen(ActionEvent event) {
-        String selected = durationChoiceBox.getValue();
-        try {
-            valueToPay = PriceDAO.getPrice(selected);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        valueToPayLabel.setText(valueToPay/100.0+"");
-        type = selected;
-
-    }
 
     @FXML
     void abort(ActionEvent event) {
@@ -133,6 +112,7 @@ public class BuySubLoginController {
         valuePaidLabel.setText(valuePaid/100.0+"");
     }
 
+
     @FXML
     void confirm(ActionEvent event) throws SQLException {
         if(valuePaid < valueToPay) {
@@ -144,14 +124,18 @@ public class BuySubLoginController {
                 infoLabel.setText(bundle.getString("buy.returnMoney") + change/100.0);
             }
 
-            // Add subscription to DB
-            int flag = SubDAO.addSub(username, type);
-            if (flag == 0) {
+            String ticketNo = ticketNoTextField.getText();
+            TicketPay ticketPay = TicketDAO.payTicketCash(ticketNo);
+
+            if(ticketPay.getControlCode() == -1) {
+                infoLabel.setTextFill(Color.rgb(255, 0, 0));
+                infoLabel.setText(bundle.getString("pay.err"));
+            } else {
                 infoLabel.setTextFill(Color.rgb(0, 255, 0));
-                infoLabel.setText(bundle.getString("buy.ok"));
+                infoLabel.setText(bundle.getString("pay.ok"));
             }
 
-            FXMLLoader loader = FXMLUtils.getLoader(BUY_SUB_DETAILS_FXML_PATH);
+            FXMLLoader loader = FXMLUtils.getLoader(PAY_CASH_DETAILS_PANE);
 
             Parent root = null;
             try {
@@ -163,9 +147,11 @@ public class BuySubLoginController {
 
 
 
-            BuySubDetailsController controller = loader.getController();
-            controller.setUser(username);
+            PayTicketCashDetailsController controller = loader.getController();
+            controller.setTicketNo(ticketNo);
             controller.fillTextField();
+
+
             Scene scene = new Scene(root);
             Stage stage1 = new Stage();
             stage1.setScene(scene);
@@ -174,56 +160,27 @@ public class BuySubLoginController {
     }
 
     @FXML
-    void login(ActionEvent event) throws SQLException {
-        username = usernameTextField.getText();
-        password = passwordField.getText();
+    void confirmTicketNo(ActionEvent event) throws SQLException {
+        String ticketNo = ticketNoTextField.getText();
+        ticketCharge = TicketDAO.getTicketCharge(ticketNo);
+        valueToPayLabel.setText("0");
 
-
-        if(LoginDAO.login(username, password, "user")){
-
-            message.setTextFill(Color.rgb(0, 255, 0));
-            message.setText(bundle.getString("login.password.correct"));
+        if (ticketCharge.getCharge() == -1) {
+            message.setText(bundle.getString("ticket.wrongNumber"));
+            message.setTextFill(Color.rgb(255, 0, 0));
             message.setVisible(true);
-            loggedPane.setVisible(true);
-            usernameTextField.setEditable(false);
-            passwordField.setEditable(false);
-
-            initChoiceBox();
-
-            valueToPay = PriceDAO.getPrice(durationChoiceBox.getValue());
-
-            durationChoiceBox.getSelectionModel().getSelectedItem();
 
         } else {
-
-            message.setTextFill(Color.rgb(255, 0, 0));
-            message.setText(bundle.getString("login.password.incorrect"));
-            message.setVisible(true);
-            loggedPane.setVisible(false);
-            usernameTextField.clear();
-            passwordField.clear();
-
+            valueToPay = ticketCharge.getCharge();
+            valueToPayLabel.setText(valueToPay / 100.0 + "");
+            message.setVisible(false);
         }
     }
-
-    private void initChoiceBox() {
-        ObservableList<String> listOfSubTypes = null;
-        try {
-            listOfSubTypes = PriceDAO.getSubTypes();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        System.out.println(listOfSubTypes);
-        durationChoiceBox.setItems(listOfSubTypes);
-
-    }
-
 
     public void backToMenu(ActionEvent actionEvent) {
         Stage currStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         rootController.loadRootLayout(currStage);
     }
-
     public void setRootController(RootLayoutController rootController) {
         this.rootController = rootController;
     }

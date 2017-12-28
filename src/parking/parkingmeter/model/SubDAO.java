@@ -43,7 +43,7 @@ public static Sub getLatestSub(String userlogin) throws SQLException {
         }
         Sub s = null;
         if (rs.next()) {
-           // String userlogin = rs.getString(1);
+            // String userlogin = rs.getString(1);
             String name = rs.getString(2);
             String surname = rs.getString(3);
             String startTime = rs.getString(4);

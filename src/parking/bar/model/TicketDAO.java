@@ -29,7 +29,7 @@ public class TicketDAO {
                 newTicket.setEntryTime(Timestamp.valueOf(rsTicket.getString("EntryTime")));
             }
             else{
-                System.out.println("Ticket not found");
+                System.out.println("TicketCharge not found");
             }
             //Return newTicket object
             return newTicket;

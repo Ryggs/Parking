@@ -8,7 +8,7 @@ import java.sql.Timestamp;
  *
  */
 public class Ticket {
-    //Declare Ticket Table Columns
+    //Declare TicketCharge Table Columns
     private IntegerProperty TicketNo;
     private SimpleObjectProperty<Timestamp> EntryTime;
     private SimpleObjectProperty<Timestamp> LeaveTime;

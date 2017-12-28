@@ -151,8 +151,8 @@ public class BuySubLoginController {
                 infoLabel.setText(bundle.getString("buy.ok"));
             }
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(BUY_SUB_DETAILS_FXML_PATH));
-            loader.setResources(FXMLUtils.getResourceBundle());
+            FXMLLoader loader = FXMLUtils.getLoader(BUY_SUB_DETAILS_FXML_PATH);
+
             Parent root = null;
             try {
                 root = loader.load();

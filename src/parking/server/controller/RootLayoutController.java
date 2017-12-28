@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
@@ -51,9 +52,15 @@ public class RootLayoutController {
 
     public void loadMainMenuScreen() {
 
-        AnchorPane pane = (AnchorPane) FXMLUtils.fxmlLoad(MAIN_MENU_PANE_FXML_PATH);
+        FXMLLoader loader = FXMLUtils.getLoader(MAIN_MENU_PANE_FXML_PATH);
+        Pane pane = null;
+        try {
+            pane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        MainMenuController menuController = FXMLUtils.getLoader().getController();
+        MainMenuController menuController = loader.getController();
         menuController.setRootController(this);
         setScreen(pane);
 

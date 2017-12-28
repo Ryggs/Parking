@@ -2,12 +2,14 @@ package parking.parkingmeter.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import parking.parkingmeter.utils.FXMLUtils;
 
+import java.io.IOException;
 import java.util.Locale;
 
 //
@@ -26,22 +28,35 @@ public class RootLayoutController {
     }
 
     public void payTicket(ActionEvent actionEvent) {
-        Parent root = FXMLUtils.fxmlLoad(PAY_TICKET_FXML_PATH);
+        FXMLLoader loader = FXMLUtils.getLoader(PAY_TICKET_FXML_PATH);
+        Parent root = null;
+        try {
+            root = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Scene scene = new Scene(root);
         Stage currStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         currStage.setScene(scene);
 
-        PayTicketController payTicketController = FXMLUtils.getLoader().getController();
+        PayTicketController payTicketController = loader.getController();
         payTicketController.setRootController(rootController);
     }
 
     public void buySub(ActionEvent actionEvent) {
-        Parent root = FXMLUtils.fxmlLoad(BUY_SUB_FXML_PATH);
+        FXMLLoader loader = FXMLUtils.getLoader(BUY_SUB_FXML_PATH);
+        Parent root = null;
+        try {
+            root = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Scene scene = new Scene(root);
         Stage currStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         currStage.setScene(scene);
 
-        BuySubController buySubController = FXMLUtils.getLoader().getController();
+        BuySubController buySubController = loader.getController();
         buySubController.setRootController(rootController);
     }
 

@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 public class FXMLUtils {
-    public static FXMLLoader loader;
 
+    // Class to use if no controller instance needed
     public static Pane fxmlLoad(String path){
-        loader = new FXMLLoader(FXMLUtils.class.getResource(path));
+        FXMLLoader loader = new FXMLLoader(FXMLUtils.class.getResource(path));
         loader.setResources(getResourceBundle());
         try {
             System.out.println(FXMLUtils.class.getResource(path));
@@ -26,7 +26,10 @@ public class FXMLUtils {
         return ResourceBundle.getBundle("parking.server.bundles.messages");
     }
 
-    public static FXMLLoader getLoader() {
+    // if controller instance needed, use this
+    public static FXMLLoader getLoader(String path) {
+        FXMLLoader loader = new FXMLLoader(FXMLUtils.class.getResource(path));
+        loader.setResources(getResourceBundle());
         return loader;
     }
 

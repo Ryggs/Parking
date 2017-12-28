@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import parking.server.utils.FXMLUtils;
 import parking.util.LoginDAO;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.ResourceBundle;
 
 
 public class LoginPopupController {
+    public static final String VIEW_LOGIN_POPUP_FXML = "../view/LoginPopup.fxml";
     @FXML
     TextField usernameTextField;
 
@@ -44,10 +46,14 @@ public class LoginPopupController {
 
     public LoginPopupController() {
         // Init login layout
+//
         loader = new FXMLLoader();
-        bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
-        loader.setLocation(this.getClass().getResource("../view/LoginPopup.fxml"));
-        loader.setResources(bundle);
+//        bundle = ResourceBundle.getBundle("parking.server.bundles.messages");
+//        loader.setLocation(this.getClass().getResource(VIEW_LOGIN_POPUP_FXML));
+//        loader.setResources(bundle);
+        loader = FXMLUtils.getLoader(VIEW_LOGIN_POPUP_FXML);
+        bundle = FXMLUtils.getResourceBundle();
+
     }
 
     @FXML

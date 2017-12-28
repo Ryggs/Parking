@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import parking.server.utils.FXMLUtils;
@@ -25,15 +26,27 @@ public class MainMenuController {
     @FXML
     void editPrices(ActionEvent event) {
 
-        Pane pane = FXMLUtils.fxmlLoad(PRICES_PANE_FXML_PATH);
-
-        PricesPaneController pricesController = FXMLUtils.getLoader().getController();
+        FXMLLoader loader = FXMLUtils.getLoader(PRICES_PANE_FXML_PATH);
+        Pane pane = null;
+        try {
+            pane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PricesPaneController pricesController = loader.getController();
         pricesController.setRootController(rootController);
         rootController.setScreen(pane);
+//        Pane pane = FXMLUtils.fxmlLoad(PRICES_PANE_FXML_PATH);
+//
+//        PricesPaneController pricesController = FXMLUtils.getLoader().getController();
+//        pricesController.setRootController(rootController);
+//        rootController.setScreen(pane);
     }
 
     @FXML
     void logout(ActionEvent event) {
+
+
 
         LoginPopupController loginInstance = new LoginPopupController();
         loginInstance.showLoginWindow(new Stage());
@@ -45,29 +58,46 @@ public class MainMenuController {
     @FXML
     void manageAdmins(ActionEvent event) {
 
-        Pane pane = FXMLUtils.fxmlLoad(ADMINS_PANE_FXML_PATH);
+        FXMLLoader loader = FXMLUtils.getLoader(ADMINS_PANE_FXML_PATH);
+        Pane pane = null;
+        try {
+            pane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        AdminsPaneController adminsPaneController = FXMLUtils.getLoader().getController();
+
+        AdminsPaneController adminsPaneController = loader.getController();
         adminsPaneController.setRootController(rootController);
         rootController.setScreen(pane);
     }
 
     @FXML
     void manageSubscriptions(ActionEvent event) {
+        FXMLLoader loader = FXMLUtils.getLoader(SUBSCRIPTIONS_PANE_FXML_PATH);
+        Pane pane = null;
+        try {
+            pane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        Pane pane = FXMLUtils.fxmlLoad(SUBSCRIPTIONS_PANE_FXML_PATH);
-
-        SubscriptionsPaneController subscriptionsPaneController = FXMLUtils.getLoader().getController();
+        SubscriptionsPaneController subscriptionsPaneController = loader.getController();
         subscriptionsPaneController.setRootController(rootController);
         rootController.setScreen(pane);
     }
 
     @FXML
     void showParkingLog(ActionEvent event) {
+        FXMLLoader loader = FXMLUtils.getLoader(LOG_PANE_FXML_PATH);
+        Pane pane = null;
+        try {
+            pane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        Pane pane = FXMLUtils.fxmlLoad(LOG_PANE_FXML_PATH);
-
-        LogPaneController logController = FXMLUtils.getLoader().getController();
+        LogPaneController logController = loader.getController();
         logController.setRootController(rootController);
         rootController.setScreen(pane);
     }

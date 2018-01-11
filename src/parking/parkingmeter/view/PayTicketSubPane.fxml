@@ -28,9 +28,11 @@
                <children>
                   <Label text="%buy.ticketNo" />
                   <TextField fx:id="ticketNoTextField" prefHeight="25.0" prefWidth="150.0" GridPane.columnIndex="1" />
-                  <Button mnemonicParsing="false" onAction="#confirm" prefHeight="25.0" prefWidth="50.0" text="OK" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                  <Label text="%buy.subNo" GridPane.rowIndex="1" />
-                  <TextField fx:id="subNoTextField" prefHeight="25.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Button mnemonicParsing="false" onAction="#confirm" prefHeight="25.0" prefWidth="50.0" text="OK" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                  <Label text="%buy.username" GridPane.rowIndex="1" />
+                  <TextField fx:id="usernameTextField" prefHeight="25.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label text="%buy.password" GridPane.rowIndex="2" />
+                  <TextField fx:id="passwordTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>
             </GridPane>
             <Label fx:id="message" textAlignment="CENTER" wrapText="true">

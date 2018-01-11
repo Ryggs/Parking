@@ -18,14 +18,19 @@ public class PayTicketSubController {
     private RootLayoutController rootController;
     ResourceBundle bundle = FXMLUtils.getResourceBundle();
     private String ticketNo;
-    private String subNo;
+    private String username;
+    private String password;
     private TicketPay ticketPay;
 
     @FXML
     private TextField ticketNoTextField;
 
     @FXML
-    private TextField subNoTextField;
+    private TextField usernameTextField;
+
+    @FXML
+    private TextField passwordTextField;
+
 
     @FXML
     private Label message;
@@ -42,11 +47,12 @@ public class PayTicketSubController {
     @FXML
     void confirm(ActionEvent event) throws SQLException {
         ticketNo = ticketNoTextField.getText();
-        subNo = subNoTextField.getText();
+        username = usernameTextField.getText();
+        password = passwordTextField.getText();
 
-        ticketPay = TicketDAO.payTicketSub(ticketNo, subNo);
+        int retultFlag = TicketDAO.payTicketSub(ticketNo, username, password);
 
-        if(ticketPay.getControlCode() == -1) {
+        if(retultFlag == -1) {
             message.setTextFill(Color.rgb(255, 0, 0));
             message.setText(bundle.getString("sub.err"));
             detailsTextField.setVisible(false);

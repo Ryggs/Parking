@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 28 Gru 2017, 20:37
+-- Czas generowania: 11 Sty 2018, 20:35
 -- Wersja serwera: 10.1.21-MariaDB
 -- Wersja PHP: 7.1.1
 
@@ -100,9 +100,10 @@ SELECT "DONE" as "Status" , "0" as "ErrType", "get_ticket" as "Fun","New Ticket 
 
 end$$
 
-CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `get_user_sub` (`vUserNo` INT)  begin
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_sub` (`pUserName` VARCHAR(255), `pUserPass` VARCHAR(255))  begin
 SET @vNow = Now();
-SET @vSubNo = (SELECT SubNo from subscription natural join user_sub where UserNo = vUserNo and Now() between subscription.StartTime and subscription.EndTime);
+SET @vUserNo = (SELECT UserNo FROM userparking WHERE UserLogin = pUsername AND UserPass = pUserPass);
+SET @vSubNo = (SELECT max(SubNo) from subscription natural join user_sub where UserNo = @vUserNo and Now() between subscription.StartTime and subscription.EndTime);
 if (@vSubNo is NOT NULL) then
 	SELECT "DONE" as "Status" , "0" as "ErrType", "get_user_sub" as "Fun","This user have active subscription" as "Info", @vSubNo as "SubNo";
 else
@@ -121,31 +122,36 @@ else
 end if;
 end$$
 
-CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `pay_ticket` (`vTicketNo` INT, `vPaymentType` ENUM('cash','subscription'), `vSubNo` INT)  begin
+CREATE DEFINER=`root`@`localhost` PROCEDURE `pay_ticket` (IN `vTicketNo` INT, IN `vPaymentType` ENUM('cash','subscription'), IN `vSubNo` INT)  begin
 SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
+SET @vPaymentTime = (SELECT PaymentTime from ticket where TicketNo = vTicketNo);
 if (@vEntryTime is NOT NULL) then
-	SET @vNow = Now();
-	SET @vControlCode = (SELECT ROUND(((99 - 10 -1) * RAND() + 10), 0)); 	if(vPaymentType = 'cash') then
-		UPDATE ticket SET PaymentType='cash' WHERE ticket.TicketNo = vTicketNo;
-		UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
-		UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
-		SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
-	elseif(vPaymentType = 'subscription') then
-		SET @vUserNo = (SELECT UserNo from user_sub where user_sub.SubNo = vSubNo);
-		if(@vUserNo is NOT NULL) then
-		
-								
-			INSERT INTO user_ticket(TicketNo, UserNo) VALUES(vTicketNo, @vUserNo);
-			UPDATE ticket SET PaymentType='subscription' WHERE ticket.TicketNo = vTicketNo;
+	if (@vPaymentTime is NULL) then
+		SET @vNow = Now();
+		SET @vControlCode = (SELECT ROUND(((99 - 10 -1) * RAND() + 10), 0)); 	if(vPaymentType = 'cash') then
+			UPDATE ticket SET PaymentType='cash' WHERE ticket.TicketNo = vTicketNo;
 			UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
 			UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
-			
 			SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
+		elseif(vPaymentType = 'subscription') then
+			SET @vUserNo = (SELECT UserNo from user_sub where user_sub.SubNo = vSubNo);
+			if(@vUserNo is NOT NULL) then
+			
+									
+				INSERT INTO user_ticket(TicketNo, UserNo) VALUES(vTicketNo, @vUserNo);
+				UPDATE ticket SET PaymentType='subscription' WHERE ticket.TicketNo = vTicketNo;
+				UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+				UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
+				
+				SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
+			else
+				SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
+			end if;
 		else
-			SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
+			SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This PaymentType is not correct. Ticket hasn't been paid" as "Info";
 		end if;
-	else
-		SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This PaymentType is not correct. Ticket hasn't been paid" as "Info";
+	else 
+		SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "Ticket has beed already paid" as "Info";
 	end if;
 else
 	SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This TicketNo is not correct. Ticket hasn't been paid" as "Info";
@@ -263,7 +269,8 @@ INSERT INTO `subscription` (`SubNo`, `StartTime`, `EndTime`, `PurchaseTime`, `Ty
 (42, '2017-12-20 13:56:38', '2018-03-21 00:00:00', '2017-12-20 13:56:38', '90days', 12),
 (43, '2017-12-20 13:56:51', '2018-03-21 00:00:00', '2017-12-20 13:56:51', '90days', 12),
 (44, '2017-12-20 14:46:21', '2018-01-20 00:00:00', '2017-12-20 14:46:21', '30days', 5001),
-(45, '2017-12-28 16:20:52', '2018-01-28 00:00:00', '2017-12-28 16:20:52', '30days', 5001);
+(45, '2017-12-28 16:20:52', '2018-01-28 00:00:00', '2017-12-28 16:20:52', '30days', 5001),
+(46, '2018-01-11 18:02:34', '2018-02-11 00:00:00', '2018-01-11 18:02:34', '30days', 5001);
 
 -- --------------------------------------------------------
 
@@ -298,7 +305,7 @@ INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `Paym
 (10, '2017-11-22 19:48:32', NULL, '2017-12-28 19:19:36', 'cash', 251700, 78),
 (11, '2017-11-22 19:49:00', NULL, NULL, NULL, NULL, NULL),
 (12, '2017-11-22 19:50:04', NULL, NULL, NULL, NULL, NULL),
-(13, '2017-11-22 19:54:52', NULL, NULL, NULL, NULL, NULL),
+(13, '2017-11-22 19:54:52', NULL, '2018-01-11 20:18:15', 'subscription', NULL, 50),
 (14, '2017-11-22 19:55:46', NULL, NULL, NULL, NULL, NULL),
 (15, '2017-11-22 19:57:02', NULL, NULL, NULL, NULL, NULL),
 (16, '2017-11-22 19:57:42', NULL, NULL, NULL, NULL, NULL),
@@ -335,7 +342,7 @@ INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `Paym
 (47, '2017-11-22 21:30:35', NULL, NULL, NULL, NULL, NULL),
 (48, '2017-11-22 21:31:11', NULL, NULL, NULL, NULL, NULL),
 (49, '2017-11-22 21:36:35', NULL, NULL, NULL, NULL, NULL),
-(50, '2017-11-22 21:49:15', NULL, NULL, NULL, NULL, NULL),
+(50, '2017-11-22 21:49:15', NULL, '2018-01-11 20:34:25', 'subscription', NULL, 68),
 (51, '2017-11-22 22:08:22', NULL, NULL, NULL, NULL, NULL),
 (52, '2017-11-22 22:18:08', NULL, NULL, NULL, NULL, NULL),
 (53, '2017-11-22 22:19:01', NULL, NULL, NULL, NULL, NULL),
@@ -419,7 +426,12 @@ INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `Paym
 (131, '2017-11-27 16:44:52', NULL, NULL, NULL, NULL, NULL),
 (132, '2017-11-27 17:00:52', NULL, NULL, NULL, NULL, NULL),
 (133, '2017-12-20 11:27:45', NULL, '2017-12-28 20:24:56', 'subscription', NULL, 35),
-(134, '2017-12-28 17:57:24', NULL, '2017-12-28 20:18:22', 'subscription', 900, 64);
+(134, '2017-12-28 17:57:24', NULL, '2017-12-28 20:18:22', 'subscription', 101100, 64),
+(135, '2018-01-11 17:59:14', NULL, '2018-01-11 18:00:27', 'cash', 300, 46),
+(136, '2018-01-11 18:00:55', NULL, '2018-01-11 18:03:56', 'subscription', NULL, 29),
+(137, '2018-01-11 20:15:35', NULL, '2018-01-11 20:18:17', 'subscription', NULL, 72),
+(138, '2018-01-11 20:15:38', NULL, '2018-01-11 20:18:29', 'subscription', NULL, 93),
+(139, '2018-01-11 20:28:28', NULL, '2018-01-11 20:34:07', 'subscription', NULL, 29);
 
 -- --------------------------------------------------------
 
@@ -457,7 +469,8 @@ INSERT INTO `userparking` (`UserNo`, `UserLogin`, `UserPass`, `PermType`, `Name`
 (12, 'dd', 'dd', 'user', 'dd', 'dd', 22, 'dd'),
 (13, '2222', '22', 'user', '22', '2', 22, '2'),
 (14, 'aaaaaaaa', 'a', 'admin', 'aaa', 'a', 22, '33a'),
-(15, '2232323', '2323', 'user', '23232', '3232', 32323, '32');
+(15, '2232323', '2323', 'user', '23232', '3232', 32323, '32'),
+(16, 'loginklienta', 'hasloklienta', 'user', 'Imie', 'Nazwisko', 123456789, 'email@email.com');
 
 -- --------------------------------------------------------
 
@@ -519,7 +532,8 @@ INSERT INTO `user_sub` (`UserNo`, `SubNo`) VALUES
 (4, 43),
 (4, 44),
 (4, 45),
-(5, 11);
+(5, 11),
+(16, 46);
 
 -- --------------------------------------------------------
 
@@ -539,7 +553,13 @@ CREATE TABLE `user_ticket` (
 INSERT INTO `user_ticket` (`UserNo`, `TicketNo`) VALUES
 (1, 2),
 (1, 133),
-(1, 134);
+(1, 134),
+(4, 13),
+(4, 50),
+(4, 137),
+(4, 138),
+(4, 139),
+(16, 136);
 
 --
 -- Indeksy dla zrzutów tabel
@@ -596,17 +616,17 @@ ALTER TABLE `prices`
 -- AUTO_INCREMENT dla tabeli `subscription`
 --
 ALTER TABLE `subscription`
-  MODIFY `SubNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `SubNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 --
 -- AUTO_INCREMENT dla tabeli `ticket`
 --
 ALTER TABLE `ticket`
-  MODIFY `TicketNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
+  MODIFY `TicketNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=140;
 --
 -- AUTO_INCREMENT dla tabeli `userparking`
 --
 ALTER TABLE `userparking`
-  MODIFY `UserNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `UserNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 --
 -- Ograniczenia dla zrzutów tabel
 --

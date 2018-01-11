@@ -104,7 +104,12 @@ public class TicketDAO {
         return t;
     }
     // TODO: Naprawić wysypywanie przy próbie zapłaty subskrypcją przy już opłaconym gotówką bilecie
-    public static TicketPay payTicketSub(String ticketNo, String subNo) throws SQLException {
+    public static int payTicketSub(String ticketNo, String username, String password) throws SQLException {
+
+
+        int subNo = getUserSub(username, password);
+        if (subNo == -1) return -1;
+
         String stmt = String.format("call pay_ticket(%s,\"subscription\",%s);", ticketNo, subNo);
         System.out.println(stmt);
         ResultSet rs = null;
@@ -115,27 +120,44 @@ public class TicketDAO {
             System.err.println("Error while executing login query");
             e.printStackTrace();
         }
-        TicketPay t = null;
         if (rs.next()) {
 
             int errType = rs.getInt("ErrType");
-            String paymentTime;
-            int controlCode;
-            String info;
-
             if (errType == 0) {
-                paymentTime = rs.getString("PaymentTime");
-                controlCode = (int) rs.getDouble("ControlCode");
-                info = rs.getString("Info");
+                return 0;
             }
             else {
-                paymentTime = "";
-                controlCode = -1;
-                info = rs.getString("Info");
-                System.err.println(info);
+                return -1;
             }
-            t = new TicketPay(paymentTime,controlCode,info);
+
         }
-        return t;
+        return 0;
     }
+
+    public static int getUserSub(String username, String password) throws SQLException {
+
+
+
+        String stmt = String.format("call get_user_sub('%s','%s');", username, password);
+        System.out.println(stmt);
+        ResultSet rs = null;
+
+        try {
+            rs = DBUtil.dbExecuteQuery(stmt);
+        } catch (SQLException e) {
+            System.err.println("Error while executing get_user_sub query");
+            e.printStackTrace();
+        }
+        int subNo = -1;
+        if (rs.next()) {
+
+            int errType = rs.getInt("ErrType");
+
+            if (errType == 0) {
+                subNo = rs.getInt("SubNo");
+            }
+        }
+        return subNo;
+    }
+
 }

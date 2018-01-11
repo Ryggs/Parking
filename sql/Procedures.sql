@@ -115,23 +115,29 @@ CALL get_ticket();
 # procedura ustalenia ceny biletu      		 ========= set_ticket_charge
 #=========================================================================================================
 DELIMITER //
-CREATE PROCEDURE set_ticket_charge(vTicketNo int)
+CREATE OR REPLACE PROCEDURE set_ticket_charge(vTicketNo int)
 begin
 SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
+SET @vPaymentTime = (SELECT PaymentTime from ticket where TicketNo = vTicketNo);
 if (@vEntryTime is NOT NULL) then
-	SET @vNow = Now();
-	SET @vDuration = (SELECT ((HOUR(TIMEDIFF(@vNow, @vEntryTime)) + 1)));
-	SET @vPriceHour = (SELECT prices.Price from prices where prices.Type = 'hour1');
-	
-	#TODO Check if ticket was paid to avoid paying again
-	
-	if( @vPriceHour is NOT NULL) then
-		SET @vCharge = @vDuration * @vPriceHour;
-		UPDATE ticket SET Charge=@vCharge WHERE ticket.TicketNo = vTicketNo;
-		SELECT "DONE" as "Status" , "0" as "ErrType", "set_ticket_charge" as "Fun","Ticket charge added correctly" as "Info", @vCharge as "TicketCharge", @vDuration as "DurationTime";
+	if (@vPaymentTime is NULL) then
+		SET @vNow = Now();
+		SET @vDuration = (SELECT ((HOUR(TIMEDIFF(@vNow, @vEntryTime)) + 1)));
+		SET @vPriceHour = (SELECT prices.Price from prices where prices.Name = 'hour1');
+		
+		#TODO Check if ticket was paid to avoid paying again
+		
+		if( @vPriceHour is NOT NULL) then
+			SET @vCharge = @vDuration * @vPriceHour;
+			UPDATE ticket SET Charge=@vCharge WHERE ticket.TicketNo = vTicketNo;
+			SELECT "DONE" as "Status" , "0" as "ErrType", "set_ticket_charge" as "Fun","Ticket charge added correctly" as "Info", @vCharge as "TicketCharge", @vDuration as "DurationTime";
+		else
+			SELECT "ERROR" as "Status", "1" as "ErrType", "set_ticket_charge" as "Fun", "There is no price hour1 in table price. Charge hasn't been added" as "Info";	
+		end if;
 	else
-		SELECT "ERROR" as "Status", "1" as "ErrType", "set_ticket_charge" as "Fun", "There is no price hour1 in table price. Charge hasn't been added" as "Info";	
+		SELECT "ERROR" as "Status", "1" as "ErrType", "set_ticket_charge" as "Fun", "Ticket has beed already paid" as "Info";	
 	end if;
+		
 else
 	SELECT "ERROR" as "Status", "1" as "ErrType", "set_ticket_charge" as "Fun", "This TicketNo is not correct. Charge hasn't been added" as "Info";
 end if;
@@ -147,34 +153,36 @@ CALL set_ticket_charge(1);
 # procedura ustawienia płatności za bilet    		 ========= pay_ticket			 # pay for ticket	vSubNo int can be just 0 if there is no subscription payment type
 #=========================================================================================================
 DELIMITER //
-CREATE PROCEDURE pay_ticket(vTicketNo int, vPaymentType enum('cash', 'subscription'), vSubNo int)
-begin
+CREATE OR REPLACE PROCEDURE `pay_ticket`(IN `vTicketNo` INT, IN `vPaymentType` ENUM('cash','subscription'), IN `vSubNo` INT) NOT DETERMINISTIC CONTAINS SQL SQL SECURITY DEFINER begin
 SET @vEntryTime = (SELECT EntryTime from ticket where TicketNo = vTicketNo);
+SET @vPaymentTime = (SELECT PaymentTime from ticket where TicketNo = vTicketNo);
 if (@vEntryTime is NOT NULL) then
-	SET @vNow = Now();
-	SET @vControlCode = (SELECT ROUND(((99 - 10 -1) * RAND() + 10), 0)); #Get random control code from 10 to 99
-	if(vPaymentType = 'cash') then
-		UPDATE ticket SET PaymentType='cash' WHERE ticket.TicketNo = vTicketNo;
-		UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
-		UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
-		SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
-	elseif(vPaymentType = 'subscription') then
-		SET @vUserNo = (SELECT UserNo from user_sub where user_sub.SubNo = vSubNo);
-		if(@vUserNo is NOT NULL) then
-		
-			#TODO ERROR This user used his subscription to pay for another ticket at the same time // zabezpieczenie przeciwcebulowe
-					
-			INSERT INTO user_ticket(TicketNo, UserNo) VALUES(vTicketNo, @vUserNo);
-			UPDATE ticket SET PaymentType='subscription' WHERE ticket.TicketNo = vTicketNo;
+	if (@vPaymentTime is NULL) then
+		SET @vNow = Now();
+		SET @vControlCode = (SELECT ROUND(((99 - 10 -1) * RAND() + 10), 0)); 	if(vPaymentType = 'cash') then
+			UPDATE ticket SET PaymentType='cash' WHERE ticket.TicketNo = vTicketNo;
 			UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
 			UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
-			
 			SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
+		elseif(vPaymentType = 'subscription') then
+			SET @vUserNo = (SELECT UserNo from user_sub where user_sub.SubNo = vSubNo);
+			if(@vUserNo is NOT NULL) then
+			
+									
+				INSERT INTO user_ticket(TicketNo, UserNo) VALUES(vTicketNo, @vUserNo);
+				UPDATE ticket SET PaymentType='subscription' WHERE ticket.TicketNo = vTicketNo;
+				UPDATE ticket SET PaymentTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+				UPDATE ticket SET ControlCode=@vControlCode WHERE ticket.TicketNo = vTicketNo;
+				
+				SELECT "DONE" as "Status" , "0" as "ErrType", "pay_ticket" as "Fun","Ticket charge added correctly" as "Info", @vNow as "PaymentTime", vPaymentType as "PaymentType", @vControlCode as "ControlCode";
+			else
+				SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
+			end if;
 		else
-			SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This SubNo is not correct. Ticket hasn't been paid" as "Info";
+			SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This PaymentType is not correct. Ticket hasn't been paid" as "Info";
 		end if;
-	else
-		SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This PaymentType is not correct. Ticket hasn't been paid" as "Info";
+	else 
+		SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "Ticket has beed already paid" as "Info";
 	end if;
 else
 	SELECT "ERROR" as "Status", "1" as "ErrType", "pay_ticket" as "Fun", "This TicketNo is not correct. Ticket hasn't been paid" as "Info";
@@ -191,10 +199,11 @@ CALL pay_ticket(2, 'cash', 0);
 # check if user have active subscription    		 ========= get_user_sub			
 #=========================================================================================================
 DELIMITER //
-CREATE PROCEDURE get_user_sub(vUserNo int)
+CREATE OR REPLACE PROCEDURE get_user_sub(pUserName varchar(255), pUserPass varchar(255))
 begin
 SET @vNow = Now();
-SET @vSubNo = (SELECT SubNo from subscription natural join user_sub where UserNo = vUserNo and Now() between subscription.StartTime and subscription.EndTime);
+SET @vUserNo = (SELECT UserNo FROM userparking WHERE UserLogin = pUsername AND UserPass = pUserPass);
+SET @vSubNo = (SELECT max(SubNo) from subscription natural join user_sub where UserNo = @vUserNo and Now() between subscription.StartTime and subscription.EndTime);
 if (@vSubNo is NOT NULL) then
 	SELECT "DONE" as "Status" , "0" as "ErrType", "get_user_sub" as "Fun","This user have active subscription" as "Info", @vSubNo as "SubNo";
 else

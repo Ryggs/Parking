@@ -39,47 +39,51 @@ public class PayTicketCashDetailsController {
     public void fillTextField() {
         try {
             ticket = TicketDAO.getPaidTicket(ticketNo);
+
+            // TODO: Ladniejsze wyswietlanie / drukowanie DONE
+            resultTextArea.appendText(bundle.getString("txt.ticketNo") + "\t\t\t\t" + ticketNo +"\n");
+            resultTextArea.appendText(bundle.getString("txt.entryTime") + "\t\t\t\t" +ticket.getEntryTime() +"\n");
+            resultTextArea.appendText(bundle.getString("txt.paymentTime") + "\t\t\t\t" + ticket.getPaymentTime() +"\n");
+            resultTextArea.appendText(bundle.getString("txt.paymentType") + "\t\t\t\t" + ticket.getPaymentType() +"\n");
+            resultTextArea.appendText(bundle.getString("txt.charge") + "\t\t\t\t\t" +ticket.getCharge()/100.0 +"\n");
+            resultTextArea.appendText(bundle.getString("txt.controlCode") + "\t\t\t\t" +ticket.getControlCode() +"\n");
+
+            //set up ticket
+            printingArea.setFont(Font.font(8));
+            printingArea.setPrefColumnCount(18);
+            printingArea.setPrefRowCount(12);  // While adding additional text remember to increase num of rows and columns
+            //set ticket info
+            printingArea.setText("********* Parking javaPark *********\n");
+            printingArea.appendText("======================\n");
+            printingArea.appendText(bundle.getString("txt.ticketNo") + "\t" + ticketNo +"\n");
+            printingArea.appendText(bundle.getString("txt.entryTime") + "\t" + ticket.getEntryTime() +"\n");
+            printingArea.appendText(bundle.getString("txt.paymentTime") + "\t" + ticket.getPaymentTime() +"\n");
+            printingArea.appendText(bundle.getString("txt.paymentType") + "\t" + ticket.getPaymentType() +"\n");
+            printingArea.appendText(bundle.getString("txt.charge") + "\t" + ticket.getCharge()/100.0 +"\n");
+            printingArea.appendText(bundle.getString("txt.controlCode") + "\t" + ticket.getControlCode() +"\n");
+            printingArea.appendText("======================\n");
+
+            //Print ticket
+            if(print(printingArea)) {
+                resultTextArea.appendText(bundle.getString("txt.printSuccess") +"\n");
+            }
+            else {
+                resultTextArea.appendText(bundle.getString("txt.printFailed") + "\n");
+                resultTextArea.appendText(bundle.getString("txt.printFailed2") + "\n");
+            }
+
+
         } catch (SQLException e) {
             e.printStackTrace();
+            resultTextArea.appendText(bundle.getString("err.dbError") + "\n");
         }
-        // TODO: Ladniejsze wyswietlanie / drukowanie DONE-Klos
-        resultTextArea.appendText(bundle.getString("txt.ticketNo") + "\t\t\t\t" + ticketNo +"\n");
-        resultTextArea.appendText(bundle.getString("txt.entryTime") + "\t\t\t\t" +ticket.getEntryTime() +"\n");
-        resultTextArea.appendText(bundle.getString("txt.paymentTime") + "\t\t\t\t" + ticket.getPaymentTime() +"\n");
-        resultTextArea.appendText(bundle.getString("txt.paymentType") + "\t\t\t\t" + ticket.getPaymentType() +"\n");
-        resultTextArea.appendText(bundle.getString("txt.charge") + "\t\t\t\t\t" +ticket.getCharge()/100.0 +"\n");
-        resultTextArea.appendText(bundle.getString("txt.controlCode") + "\t\t\t\t" +ticket.getControlCode() +"\n");
 
-        //set up ticket
-        printingArea.setFont(Font.font(8));
-        printingArea.setPrefColumnCount(18);
-        printingArea.setPrefRowCount(12);  // While adding additional text remember to increase num of rows and columns
-        //set ticket info
-        printingArea.setText("********* Parking javaPark *********\n");
-        printingArea.appendText("======================\n");
-        printingArea.appendText(bundle.getString("txt.ticketNo") + "\t" + ticketNo +"\n");
-        printingArea.appendText(bundle.getString("txt.entryTime") + "\t" +ticket.getEntryTime() +"\n");
-        printingArea.appendText(bundle.getString("txt.paymentTime") + "\t" + ticket.getPaymentTime() +"\n");
-        printingArea.appendText(bundle.getString("txt.paymentType") + "\t" + ticket.getPaymentType() +"\n");
-        printingArea.appendText(bundle.getString("txt.charge") + "\t" +ticket.getCharge()/100.0 +"\n");
-        printingArea.appendText(bundle.getString("txt.controlCode") + "\t" +ticket.getControlCode() +"\n");
-        printingArea.appendText("======================\n");
-
-        //Print ticket
-        if(print(printingArea)) {
-            resultTextArea.appendText(bundle.getString("txt.printSuccess") +"\n");
-        }
-        else {
-            resultTextArea.appendText(bundle.getString("txt.printFailed") + "\n");
-            resultTextArea.appendText(bundle.getString("txt.printFailed2") + "\n");
-        }
     }
 
 
     public void setTicketNo(String ticketNo) {
         this.ticketNo = ticketNo;
     }
-
 
     private boolean print(Node node)
     {
@@ -91,7 +95,7 @@ public class PayTicketCashDetailsController {
             Printer printer = printerJob.getPrinter();
 
             // Create Paper
-            Paper ticketPaper = PrintHelper.createPaper("Ticket200x200", 200, 200, Units.MM);
+            Paper ticketPaper = PrintHelper.createPaper("Ticket100x100", 100, 100, Units.MM);
 
             // Create the Page Layout of the Printer
             // PageLayout pageLayout = printer.createPageLayout(ticketPaper, PageOrientation.LANDSCAPE,Printer.MarginType.EQUAL);
@@ -117,9 +121,4 @@ public class PayTicketCashDetailsController {
             return false;
         }
     }
-
-
-
-
-
 }

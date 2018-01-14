@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.TextArea?>
 
 <BorderPane prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.parkingmeter.controller.PayTicketSubController">
    <top>
@@ -50,10 +51,10 @@
         <Button mnemonicParsing="false" onAction="#backToMenu" prefHeight="100.0" prefWidth="100.0" text="%btn.back" BorderPane.alignment="CENTER" />
    </bottom>
    <center>
-      <TextField fx:id="detailsTextField" prefHeight="300.0" visible="false" BorderPane.alignment="CENTER">
+      <TextArea fx:id="detailsTextField" prefHeight="300.0" visible="false" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets left="50.0" right="50.0" />
          </BorderPane.margin>
-      </TextField>
+      </TextArea>
    </center>
 </BorderPane>

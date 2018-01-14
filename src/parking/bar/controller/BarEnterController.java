@@ -114,12 +114,16 @@ public class BarEnterController{
             }
             else{
                 // Write Error Message
+                resultArea.appendText("\nAwaria drukarki\nSkontaktuj się z administratorem");
+                resultArea.appendText("\n======================");
                 resultArea.appendText("\nPrinting failed.\nThe printer is damaged\nPlease contact with administrator");
                 return false;
             }
         }
         else{
             // Write Error Message
+            resultArea.appendText("\nDrukowanie nieudane.\nBrak drukarki.\nSkontaktuj się z administratorem.");
+            resultArea.appendText("\n======================");
             resultArea.appendText("\nPrinting failed.\nThere is no printer");
             return false;
         }

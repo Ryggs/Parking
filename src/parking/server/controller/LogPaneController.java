@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -37,6 +38,9 @@ public class LogPaneController {
 
     @FXML
     private TableColumn<Log, Integer> controlCodeColumn;
+
+    @FXML
+    private TextField ticketNoTextField;
 
     public void initialize() {
         ticketNoColumn.setCellValueFactory( cellData -> cellData.getValue().ticketNoProperty().asObject());
@@ -84,6 +88,16 @@ public class LogPaneController {
 
     }
 
+    @FXML
+    void cancelCharge(ActionEvent event) {
+        String ticketNo = ticketNoTextField.getText();
+        LogDAO.cancelCharge(ticketNo);
+        try {
+            refreshTableView();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void setRootController(RootLayoutController rootController) {
         this.rootController = rootController;

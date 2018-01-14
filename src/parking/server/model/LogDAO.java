@@ -50,4 +50,15 @@ public class LogDAO {
         }
 
     }
+
+    public static void cancelCharge(String ticketNo) {
+        String stmt = "UPDATE ticket SET `Charge` = 0, PaymentTime = '9999-12-31 23:00:00' WHERE `TicketNo` = " + ticketNo;
+
+        try {
+            DBUtil.dbExecuteUpdate(stmt);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

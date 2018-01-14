@@ -1,8 +1,10 @@
 package parking.server.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.IntegerStringConverter;
 import parking.server.model.Subscription;
@@ -38,6 +40,9 @@ public class SubscriptionsPaneController {
     @FXML
     private TableColumn<Subscription, Integer> priceColumn;
 
+    @FXML
+    private TextField subNoTextField;
+
 
 
     public void initialize() {
@@ -62,6 +67,16 @@ public class SubscriptionsPaneController {
 
     }
 
+    @FXML
+    void giveUnlimited(ActionEvent event) {
+        String subNo = subNoTextField.getText();
+        SubscriptionDAO.giveUserUnlimitedSubscription(subNo);
+        try {
+            refreshTableView();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void setRootController(RootLayoutController rootController) {
         this.rootController = rootController;

@@ -37,4 +37,13 @@ public class SubscriptionDAO {
 
     }
 
+    public static void giveUserUnlimitedSubscription(String subNo) {
+        String stmt = "UPDATE subscription SET `EndTime` = '9999-12-31 23:59:59', Type = 'unlimited' WHERE `SubNo` = " + subNo;
+
+        try {
+            DBUtil.dbExecuteUpdate(stmt);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -10,7 +10,7 @@ import java.nio.file.Path;
 
 public class Bar extends Thread{
     static public boolean isBarClosed = true;
-    static public long barOpenTime = 30000; //in milisec if time is longer than 30sec
+    static public long barOpenTime = 60000; //in milisec if time is longer than 30sec
     private long startTime;
     private long elapsedTime;
     // IN FILE BAR CLOSED = 1, BAR OPENED = 0;

@@ -48,14 +48,17 @@ public class BarEnterController{
                 Ticket newTicket = TicketDAO.getNewTicket();
                 String newInfo = "Twój nr biletu to " + newTicket.getTicketNo();
                 String newInfo2 = "\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0, 19);
-                String newInfo3 = "\nMasz 30sek na wjazd";
+                String newInfo3 = "\nMasz 60sek na wjazd";
 
                 System.out.print(newInfo);
                 System.out.print(newInfo2);
                 System.out.print(newInfo3);
                 System.out.println("");
                 setInfoToTextArea(newInfo + newInfo2 + newInfo3);
-
+                resultArea.appendText("\n==============\n");
+                resultArea.appendText("Your ticketNo is " + newTicket.getTicketNo() +"\n");
+                resultArea.appendText("Entry time " + newTicket.getEntryTime().toString().substring(0, 19) + "\n");
+                resultArea.appendText("You have 60sec for entry\n");
                 //set up ticket
                 printingArea.setFont(Font.font(8));
                 printingArea.setPrefColumnCount(20);

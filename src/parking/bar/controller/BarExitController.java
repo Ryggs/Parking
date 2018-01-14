@@ -38,8 +38,8 @@ public class BarExitController {
                     System.out.println("controlCode: " + Integer.parseInt(getCode().substring(getCode().length() - 2, getCode().length())));
 
                     if (canOpenBar) {
-                        setInfoToResultArea("Bar is opened for 30 sec\nHave a nice day!");
-
+                        setInfoToResultArea("Bar is opened for 60 sec\nHave a nice day!");
+                        resultArea.appendText("\nSzlaban jest otwarty na 60sek.\nMiłego dnia!");
                         //open Bar
                         Bar.openBar();
 
@@ -51,6 +51,7 @@ public class BarExitController {
                         showCode();
                     } else {
                         setInfoToResultArea("Error occured\nYou didn't pay your ticket\nor code you have entered is incorrect");
+                        resultArea.appendText("\nNie zapłaciłeś biletu\nlub kod kontrolny jest niepoprawny");
                         setCode("");
                         showCode();
                     }
@@ -58,10 +59,12 @@ public class BarExitController {
                 } catch (SQLException e) {
                     System.out.println("Error occurred while checking ticket in DB.\n" + e);
                     setInfoToResultArea("Error occured with our DataBase\nContact with administrator, please");
+                    resultArea.appendText("\nBłąd przy łączeniu z serwerem\nProszę skontakotwać się z administratorem");
                     //throw e;
                 } catch (java.lang.NumberFormatException e) {
                     System.out.println("Error occurred while transforming code.\n" + e);
                     setInfoToResultArea("Error: Your code is not correct\nEnter right code");
+                    resultArea.appendText("\nNiepoprawny kod\nwprowadź prawidłowy kod");
                     setCode("");
                     //showCode();
                 }

@@ -6,14 +6,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.bar.controller.BarEnterController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="431.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.bar.controller.BarEnterController">
    <children>
-      <Button fx:id="getTicketBtn" layoutX="98.0" layoutY="18.0" mnemonicParsing="false" onAction="#getTicket" prefHeight="163.0" prefWidth="408.0" text="Drukuj Bilet / Get Ticket" textAlignment="CENTER">
+      <Button fx:id="getTicketBtn" layoutX="98.0" layoutY="18.0" mnemonicParsing="false" onAction="#getTicket" prefHeight="124.0" prefWidth="408.0" text="Drukuj Bilet / Get Ticket" textAlignment="CENTER">
          <font>
             <Font size="27.0" />
          </font>
       </Button>
-      <TextArea fx:id="resultArea" layoutX="98.0" layoutY="186.0" prefHeight="210.0" prefWidth="408.0" wrapText="true">
+      <TextArea fx:id="resultArea" layoutX="98.0" layoutY="150.0" prefHeight="280.0" prefWidth="408.0" wrapText="true">
          <font>
             <Font size="20.0" />
          </font>

@@ -1,8 +1,12 @@
 package parking.server.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 import parking.server.model.Log;
 import parking.server.model.LogDAO;
 
@@ -29,7 +33,7 @@ public class LogPaneController {
     private TableColumn<Log, String> paymentTypeColumn;
 
     @FXML
-    private TableColumn<Log, Double> chargeColumn;
+    private TableColumn<Log, Integer> chargeColumn;
 
     @FXML
     private TableColumn<Log, Integer> controlCodeColumn;
@@ -51,13 +55,26 @@ public class LogPaneController {
 //        leaveTimeColumn.setCellFactory(TextFieldTableCell.<Log>forTableColumn());
 //        paymentTimeColumn.setCellFactory(TextFieldTableCell.<Log>forTableColumn());
 //        paymentTypeColumn.setCellFactory(TextFieldTableCell.<Log>forTableColumn());
-//        chargeColumn.setCellFactory(TextFieldTableCell.<Log, Double>forTableColumn(new DoubleStringConverter()));
+        chargeColumn.setCellFactory(TextFieldTableCell.<Log, Integer>forTableColumn(new IntegerStringConverter()));
 //        controlCodeColumn.setCellFactory(TextFieldTableCell.<Log, Integer>forTableColumn(new IntegerStringConverter()));
+        logTableView.setEditable(true);
+
         try {
             refreshTableView();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    void changeCharge(TableColumn.CellEditEvent<Log, String> e) {
+
+        int ticketNo = (e.getTableView().getItems().get(e.getTablePosition().getRow()).getTicketNo());
+
+        Object newValue = e.getNewValue();
+//        System.out.println(newValue.toString());  // e.getNewValue().toString() nie działą
+
+        LogDAO.changeCharge(ticketNo,(int)newValue);
     }
 
     public void refreshTableView() throws SQLException {

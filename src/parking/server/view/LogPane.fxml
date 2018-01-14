@@ -21,7 +21,7 @@
             <TableColumn fx:id="leaveTimeColumn" prefWidth="150.0" text="%log.leaveTime" />
             <TableColumn fx:id="paymentTimeColumn" prefWidth="150.0" text="%log.paymentTime" />
             <TableColumn fx:id="paymentTypeColumn" prefWidth="100.0" text="%log.paymentType" />
-            <TableColumn fx:id="chargeColumn" prefWidth="100.0" text="%log.charge" />
+            <TableColumn fx:id="chargeColumn" onEditCommit="#changeCharge" prefWidth="100.0" text="%log.charge" />
             <TableColumn fx:id="controlCodeColumn" prefWidth="100.0" text="%log.controlCode" />
         </columns>
       </TableView>

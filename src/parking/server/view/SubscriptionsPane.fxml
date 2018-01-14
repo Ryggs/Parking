@@ -5,10 +5,14 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.server.controller.SubscriptionsPaneController">
     <children>
-        <Label layoutX="151.0" layoutY="107.0" text="%sub.mainLabel" />
+        <Label layoutX="60.0" layoutY="89.0" text="%sub.mainLabel">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
         <Button layoutX="287.0" layoutY="488.0" mnemonicParsing="false" onAction="#backToMenu" text="%app.backToMenu" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="60.0" />
       <TableView fx:id="subTableView" layoutX="151.0" layoutY="165.0" prefHeight="400.0" prefWidth="800.0" AnchorPane.leftAnchor="60.0">
         <columns>
@@ -21,7 +25,5 @@
             <TableColumn fx:id="priceColumn" prefWidth="75.0" text="%sub.price" />
         </columns>
       </TableView>
-      <Label text="Label" />
-      <Label layoutX="446.0" layoutY="74.0" text="TODO: DODAĆ edytowanie" />
     </children>
 </AnchorPane>

@@ -27,7 +27,7 @@ public class LogDAO {
             String leaveTime = rs.getString(3);
             String paymentTime = rs.getString(4);
             String paymentType = rs.getString(5);
-            double charge = rs.getDouble(6);
+            int charge = rs.getInt(6);
             int controlCode = rs.getInt(7);
 
 
@@ -39,4 +39,15 @@ public class LogDAO {
 
     }
 
+    public static void changeCharge(int ticketNo, int newCharge) {
+
+        String stmt = "UPDATE ticket SET `Charge` = '" +newCharge+ "' WHERE `TicketNo` = " + ticketNo;
+
+        try {
+            DBUtil.dbExecuteUpdate(stmt);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

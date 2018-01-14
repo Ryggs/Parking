@@ -10,14 +10,14 @@ public class Log {
         private StringProperty leaveTime = new SimpleStringProperty("");
         private StringProperty paymentTime = new SimpleStringProperty("");
         private StringProperty paymentType = new SimpleStringProperty("");
-        private DoubleProperty charge = new SimpleDoubleProperty();
+        private IntegerProperty charge = new SimpleIntegerProperty();
         private IntegerProperty controlCode = new SimpleIntegerProperty();
 
 
         public Log() {
         }
 
-        public Log(int ticketNo, String entryTime, String leaveTime, String paymentTime, String paymentType, double charge, int controlCode) {
+        public Log(int ticketNo, String entryTime, String leaveTime, String paymentTime, String paymentType, int charge, int controlCode) {
             this.ticketNo.setValue(ticketNo);
             this.entryTime.setValue(entryTime);
             this.leaveTime.setValue(leaveTime);
@@ -89,15 +89,15 @@ public class Log {
         this.paymentType.set(paymentType);
     }
 
-    public double getCharge() {
+    public int getCharge() {
         return charge.get();
     }
 
-    public DoubleProperty chargeProperty() {
+    public IntegerProperty chargeProperty() {
         return charge;
     }
 
-    public void setCharge(double charge) {
+    public void setCharge(int charge) {
         this.charge.set(charge);
     }
 

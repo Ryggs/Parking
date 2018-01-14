@@ -49,7 +49,7 @@ public class MainBarEnter extends Application {
 
             //Third, show the primary stage
             primaryStage.setFullScreenExitHint("ENTER BAR");
-            primaryStage.setFullScreen(true);
+//            primaryStage.setFullScreen(true);
             primaryStage.setAlwaysOnTop(true);
             primaryStage.show(); //Display the primary stage
         } catch (IOException e) {

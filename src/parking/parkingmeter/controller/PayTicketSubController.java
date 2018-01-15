@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.print.*;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
@@ -35,7 +36,7 @@ public class PayTicketSubController {
     private TextField usernameTextField;
 
     @FXML
-    private TextField passwordTextField;
+    private PasswordField passwordTextField;
     @FXML
     final TextArea printingArea = new TextArea();
 

@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.5.2
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 11 Sty 2018, 20:35
--- Wersja serwera: 10.1.21-MariaDB
--- Wersja PHP: 7.1.1
+-- Generation Time: Jan 15, 2018 at 11:16 AM
+-- Server version: 10.1.29-MariaDB
+-- PHP Version: 7.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -17,12 +19,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Baza danych: `carpark`
+-- Database: `carpark`
 --
 
 DELIMITER $$
 --
--- Procedury
+-- Procedures
 --
 CREATE DEFINER=`javaparking`@`localhost` PROCEDURE `buy_sub` (IN `vLogin` VARCHAR(50), IN `vType` ENUM('30days','90days','180days','1year','unlimited'), IN `vStartTime` DATETIME)  begin
 SET @vUserNo = (SELECT UserNo from userparking where UserLogin = vLogin);
@@ -68,7 +70,8 @@ if (@vPaymentTime is NOT NULL) then
 			SET @vNow = Now();
 			SET @vDuration = (SELECT (TIMEDIFF(@vNow, @vPaymentTime)));
 			if(@vDuration < "00:15:00") then
-								SELECT "DONE" as "Status" , "0" as "ErrType", "check_ticket_can_exit" as "Fun","Ticket LeaveTime added corectly" as "Info";
+				UPDATE ticket SET LeaveTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+				SELECT "DONE" as "Status" , "0" as "ErrType", "check_ticket_can_exit" as "Fun","Ticket LeaveTime added corectly" as "Info";
 			else
 				SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "Your 15 min delay has gone. You have to pay ticket again for additional minutes" as "Info";
 			end if;
@@ -183,7 +186,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `prices`
+-- Table structure for table `prices`
 --
 
 CREATE TABLE `prices` (
@@ -195,12 +198,12 @@ CREATE TABLE `prices` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Zrzut danych tabeli `prices`
+-- Dumping data for table `prices`
 --
 
 INSERT INTO `prices` (`Id`, `Name`, `Type`, `Price`, `Duration`) VALUES
 (1, 'hour1', 'hours', 300, 1),
-(2, '30days', 'subscription', 5001, 31),
+(2, '30days', 'subscription', 5000, 31),
 (3, '90days', 'subscription', 12, 90),
 (4, '180days', 'subscription', 22000, 180),
 (5, '1year', 'subscription', 40000, 366);
@@ -208,7 +211,7 @@ INSERT INTO `prices` (`Id`, `Name`, `Type`, `Price`, `Duration`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `subscription`
+-- Table structure for table `subscription`
 --
 
 CREATE TABLE `subscription` (
@@ -221,7 +224,7 @@ CREATE TABLE `subscription` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Zrzut danych tabeli `subscription`
+-- Dumping data for table `subscription`
 --
 
 INSERT INTO `subscription` (`SubNo`, `StartTime`, `EndTime`, `PurchaseTime`, `Type`, `Price`) VALUES
@@ -267,15 +270,18 @@ INSERT INTO `subscription` (`SubNo`, `StartTime`, `EndTime`, `PurchaseTime`, `Ty
 (40, '2017-12-20 13:55:34', '2018-03-21 00:00:00', '2017-12-20 13:55:34', '90days', 12),
 (41, '2017-12-20 13:56:05', '2018-03-21 00:00:00', '2017-12-20 13:56:05', '90days', 12),
 (42, '2017-12-20 13:56:38', '2018-03-21 00:00:00', '2017-12-20 13:56:38', '90days', 12),
-(43, '2017-12-20 13:56:51', '2018-03-21 00:00:00', '2017-12-20 13:56:51', '90days', 12),
+(43, '2017-12-20 13:56:51', '9999-12-31 23:59:59', '2017-12-20 13:56:51', 'unlimited', 12),
 (44, '2017-12-20 14:46:21', '2018-01-20 00:00:00', '2017-12-20 14:46:21', '30days', 5001),
 (45, '2017-12-28 16:20:52', '2018-01-28 00:00:00', '2017-12-28 16:20:52', '30days', 5001),
-(46, '2018-01-11 18:02:34', '2018-02-11 00:00:00', '2018-01-11 18:02:34', '30days', 5001);
+(46, '2018-01-11 18:02:34', '2018-02-11 00:00:00', '2018-01-11 18:02:34', '30days', 5001),
+(47, '2018-01-14 15:28:10', '2018-02-14 00:00:00', '2018-01-14 15:28:10', '30days', 5001),
+(48, '2018-01-14 16:06:10', '2018-02-14 00:00:00', '2018-01-14 16:06:10', '30days', 5001),
+(49, '2018-01-15 10:35:43', '2018-07-15 00:00:00', '2018-01-15 10:35:43', '180days', 22000);
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `ticket`
+-- Table structure for table `ticket`
 --
 
 CREATE TABLE `ticket` (
@@ -289,7 +295,7 @@ CREATE TABLE `ticket` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Zrzut danych tabeli `ticket`
+-- Dumping data for table `ticket`
 --
 
 INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `PaymentType`, `Charge`, `ControlCode`) VALUES
@@ -300,11 +306,11 @@ INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `Paym
 (5, '2017-11-21 22:41:08', '2017-11-22 01:16:50', '2017-11-22 08:00:00', NULL, NULL, NULL),
 (6, '2017-11-21 23:21:19', '2017-11-22 01:18:33', '2017-11-22 19:00:00', NULL, NULL, 12),
 (7, '2017-11-21 23:21:20', NULL, '2017-11-22 23:00:00', NULL, NULL, 10),
-(8, '2017-11-22 19:47:14', NULL, '2017-11-23 23:00:00', NULL, NULL, 0),
+(8, '2017-11-22 19:47:14', '2018-01-15 11:12:23', '9999-12-31 23:00:00', NULL, 0, 10),
 (9, '2017-11-22 19:48:26', NULL, '2017-12-28 18:09:55', 'cash', 251700, 34),
 (10, '2017-11-22 19:48:32', NULL, '2017-12-28 19:19:36', 'cash', 251700, 78),
-(11, '2017-11-22 19:49:00', NULL, NULL, NULL, NULL, NULL),
-(12, '2017-11-22 19:50:04', NULL, NULL, NULL, NULL, NULL),
+(11, '2017-11-22 19:49:00', NULL, NULL, NULL, 251700, NULL),
+(12, '2017-11-22 19:50:04', '2018-01-15 11:09:30', '9999-12-31 23:00:00', NULL, 0, 10),
 (13, '2017-11-22 19:54:52', NULL, '2018-01-11 20:18:15', 'subscription', NULL, 50),
 (14, '2017-11-22 19:55:46', NULL, NULL, NULL, NULL, NULL),
 (15, '2017-11-22 19:57:02', NULL, NULL, NULL, NULL, NULL),
@@ -431,12 +437,46 @@ INSERT INTO `ticket` (`TicketNo`, `EntryTime`, `LeaveTime`, `PaymentTime`, `Paym
 (136, '2018-01-11 18:00:55', NULL, '2018-01-11 18:03:56', 'subscription', NULL, 29),
 (137, '2018-01-11 20:15:35', NULL, '2018-01-11 20:18:17', 'subscription', NULL, 72),
 (138, '2018-01-11 20:15:38', NULL, '2018-01-11 20:18:29', 'subscription', NULL, 93),
-(139, '2018-01-11 20:28:28', NULL, '2018-01-11 20:34:07', 'subscription', NULL, 29);
+(139, '2018-01-11 20:28:28', NULL, '2018-01-11 20:34:07', 'subscription', NULL, 29),
+(140, '2018-01-14 14:35:12', NULL, NULL, NULL, NULL, NULL),
+(141, '2018-01-14 14:38:18', NULL, '2018-01-14 14:40:37', 'cash', 300, 77),
+(142, '2018-01-14 14:38:48', NULL, '2018-01-14 14:55:32', 'cash', 300, 57),
+(143, '2018-01-14 14:40:12', NULL, '2018-01-14 15:29:45', 'subscription', NULL, 80),
+(144, '2018-01-14 15:55:17', NULL, '2018-01-14 15:55:30', 'subscription', NULL, 77),
+(145, '2018-01-14 15:56:49', NULL, '2018-01-14 15:57:10', 'subscription', NULL, 70),
+(146, '2018-01-14 15:56:51', NULL, '2018-01-14 16:00:54', 'subscription', NULL, 74),
+(147, '2018-01-14 15:56:53', NULL, '2018-01-14 16:01:20', 'subscription', NULL, 40),
+(148, '2018-01-14 15:56:54', NULL, NULL, NULL, NULL, NULL),
+(149, '2018-01-14 16:05:11', NULL, '2018-01-14 16:07:13', 'cash', 300, 38),
+(150, '2018-01-14 16:05:38', NULL, '2018-01-14 16:07:29', 'subscription', NULL, 25),
+(151, '2018-01-14 16:16:27', NULL, '2018-01-14 16:19:11', 'cash', 300, 90),
+(152, '2018-01-14 16:18:07', NULL, '2018-01-14 17:45:18', 'cash', 600, 82),
+(153, '2018-01-14 17:43:35', NULL, '9999-12-31 23:00:00', NULL, 0, NULL),
+(154, '2018-01-14 17:43:50', NULL, '2018-01-14 17:46:06', 'cash', 300, 87),
+(155, '2018-01-15 10:32:29', NULL, '2018-01-15 10:33:50', 'cash', 300, 66),
+(156, '2018-01-15 10:32:40', NULL, '2018-01-15 10:36:24', 'subscription', NULL, 44),
+(157, '2018-01-15 10:39:55', NULL, NULL, NULL, NULL, NULL),
+(158, '2018-01-15 10:39:58', NULL, NULL, NULL, NULL, NULL),
+(159, '2018-01-15 10:40:07', NULL, NULL, NULL, NULL, NULL),
+(160, '2018-01-15 10:40:12', NULL, NULL, NULL, NULL, NULL),
+(161, '2018-01-15 10:41:56', NULL, NULL, NULL, NULL, NULL),
+(162, '2018-01-15 10:46:01', NULL, NULL, NULL, NULL, NULL),
+(163, '2018-01-15 10:47:22', NULL, NULL, NULL, NULL, NULL),
+(164, '2018-01-15 10:48:33', NULL, NULL, NULL, NULL, NULL),
+(165, '2018-01-15 10:48:51', NULL, NULL, NULL, NULL, NULL),
+(166, '2018-01-15 10:48:55', NULL, NULL, NULL, NULL, NULL),
+(167, '2018-01-15 10:49:39', NULL, NULL, NULL, NULL, NULL),
+(168, '2018-01-15 10:50:23', NULL, NULL, NULL, NULL, NULL),
+(169, '2018-01-15 10:52:35', NULL, NULL, NULL, NULL, NULL),
+(170, '2018-01-15 10:53:44', NULL, NULL, NULL, NULL, NULL),
+(171, '2018-01-15 10:54:21', NULL, NULL, NULL, NULL, NULL),
+(172, '2018-01-15 10:55:36', NULL, NULL, NULL, NULL, NULL),
+(173, '2018-01-15 10:55:58', NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `userparking`
+-- Table structure for table `userparking`
 --
 
 CREATE TABLE `userparking` (
@@ -451,7 +491,7 @@ CREATE TABLE `userparking` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Zrzut danych tabeli `userparking`
+-- Dumping data for table `userparking`
 --
 
 INSERT INTO `userparking` (`UserNo`, `UserLogin`, `UserPass`, `PermType`, `Name`, `Surname`, `Phone`, `Email`) VALUES
@@ -470,12 +510,14 @@ INSERT INTO `userparking` (`UserNo`, `UserLogin`, `UserPass`, `PermType`, `Name`
 (13, '2222', '22', 'user', '22', '2', 22, '2'),
 (14, 'aaaaaaaa', 'a', 'admin', 'aaa', 'a', 22, '33a'),
 (15, '2232323', '2323', 'user', '23232', '3232', 32323, '32'),
-(16, 'loginklienta', 'hasloklienta', 'user', 'Imie', 'Nazwisko', 123456789, 'email@email.com');
+(16, 'loginklienta', 'hasloklienta', 'user', 'Imie', 'Nazwisko', 123456789, 'email@email.com'),
+(17, 'numer', 'numer', 'user', 'Klos', 'Labs', 555666009, 'viperowski@gmail.com'),
+(18, 'User1', 'user', 'user', 'Klos', 'Labs', 215568, 'viperowski@gmail.com');
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `user_sub`
+-- Table structure for table `user_sub`
 --
 
 CREATE TABLE `user_sub` (
@@ -484,7 +526,7 @@ CREATE TABLE `user_sub` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Zrzut danych tabeli `user_sub`
+-- Dumping data for table `user_sub`
 --
 
 INSERT INTO `user_sub` (`UserNo`, `SubNo`) VALUES
@@ -533,12 +575,15 @@ INSERT INTO `user_sub` (`UserNo`, `SubNo`) VALUES
 (4, 44),
 (4, 45),
 (5, 11),
-(16, 46);
+(16, 46),
+(17, 47),
+(17, 48),
+(18, 49);
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `user_ticket`
+-- Table structure for table `user_ticket`
 --
 
 CREATE TABLE `user_ticket` (
@@ -547,7 +592,7 @@ CREATE TABLE `user_ticket` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Zrzut danych tabeli `user_ticket`
+-- Dumping data for table `user_ticket`
 --
 
 INSERT INTO `user_ticket` (`UserNo`, `TicketNo`) VALUES
@@ -559,10 +604,17 @@ INSERT INTO `user_ticket` (`UserNo`, `TicketNo`) VALUES
 (4, 137),
 (4, 138),
 (4, 139),
-(16, 136);
+(16, 136),
+(17, 143),
+(17, 144),
+(17, 145),
+(17, 146),
+(17, 147),
+(17, 150),
+(18, 156);
 
 --
--- Indeksy dla zrzutów tabel
+-- Indexes for dumped tables
 --
 
 --
@@ -608,42 +660,47 @@ ALTER TABLE `user_ticket`
 --
 
 --
--- AUTO_INCREMENT dla tabeli `prices`
+-- AUTO_INCREMENT for table `prices`
 --
 ALTER TABLE `prices`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
 --
--- AUTO_INCREMENT dla tabeli `subscription`
+-- AUTO_INCREMENT for table `subscription`
 --
 ALTER TABLE `subscription`
-  MODIFY `SubNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `SubNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+
 --
--- AUTO_INCREMENT dla tabeli `ticket`
+-- AUTO_INCREMENT for table `ticket`
 --
 ALTER TABLE `ticket`
-  MODIFY `TicketNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=140;
+  MODIFY `TicketNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=174;
+
 --
--- AUTO_INCREMENT dla tabeli `userparking`
+-- AUTO_INCREMENT for table `userparking`
 --
 ALTER TABLE `userparking`
-  MODIFY `UserNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `UserNo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
 --
--- Ograniczenia dla zrzutów tabel
+-- Constraints for dumped tables
 --
 
 --
--- Ograniczenia dla tabeli `user_sub`
+-- Constraints for table `user_sub`
 --
 ALTER TABLE `user_sub`
   ADD CONSTRAINT `user_sub_fk_1` FOREIGN KEY (`UserNo`) REFERENCES `userparking` (`UserNo`),
   ADD CONSTRAINT `user_sub_fk_2` FOREIGN KEY (`SubNo`) REFERENCES `subscription` (`SubNo`);
 
 --
--- Ograniczenia dla tabeli `user_ticket`
+-- Constraints for table `user_ticket`
 --
 ALTER TABLE `user_ticket`
   ADD CONSTRAINT `user_ticket_fk_1` FOREIGN KEY (`UserNo`) REFERENCES `userparking` (`UserNo`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `user_ticket_fk_2` FOREIGN KEY (`TicketNo`) REFERENCES `ticket` (`TicketNo`);
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

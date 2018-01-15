@@ -250,7 +250,7 @@ if (@vPaymentTime is NOT NULL) then
 			SET @vNow = Now();
 			SET @vDuration = (SELECT (TIMEDIFF(@vNow, @vPaymentTime)));
 			if(@vDuration < "00:15:00") then
-				#UPDATE ticket SET LeaveTime=@vNow WHERE ticket.TicketNo = vTicketNo;
+				UPDATE ticket SET LeaveTime=@vNow WHERE ticket.TicketNo = vTicketNo;
 				SELECT "DONE" as "Status" , "0" as "ErrType", "check_ticket_can_exit" as "Fun","Ticket LeaveTime added corectly" as "Info";
 			else
 				SELECT "ERROR" as "Status", "1" as "ErrType", "check_ticket_can_exit" as "Fun", "Your 15 min delay has gone. You have to pay ticket again for additional minutes" as "Info";

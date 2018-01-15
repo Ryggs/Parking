@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.control.TextArea?>
 
+<?import javafx.scene.control.PasswordField?>
 <BorderPane prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="parking.parkingmeter.controller.PayTicketSubController">
    <top>
       <HBox spacing="100.0" BorderPane.alignment="CENTER">
@@ -33,7 +34,7 @@
                   <Label text="%buy.username" GridPane.rowIndex="1" />
                   <TextField fx:id="usernameTextField" prefHeight="25.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="%buy.password" GridPane.rowIndex="2" />
-                  <TextField fx:id="passwordTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <PasswordField fx:id="passwordTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>
             </GridPane>
             <Label fx:id="message" textAlignment="CENTER" wrapText="true">

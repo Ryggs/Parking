@@ -24,7 +24,8 @@ public class BarExitController {
     //OpenBar
     @FXML
     private void openBar(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        setInfoToResultArea("Wait until the bar is closed");
+        setInfoToResultArea("Zaczekaj aż szlaban opadnie");
+        resultArea.appendText("\nWait until the bar is closed");
         if(Bar.isBarClosed) {
             setInfoToResultArea("Enter correct code");
             if (code.length() > 2) // 1 digit ticketNo + 2 digits controlCode

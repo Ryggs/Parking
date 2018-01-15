@@ -39,6 +39,7 @@ public class BarEnterController{
     @FXML
     private void getTicket(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
         setInfoToTextArea("Zaczekaj aż szlaban opadnie");
+        resultArea.appendText("\nWait until the bar is closed");
         if(Bar.isBarClosed)
             canGetTicket = true;
         if(canGetTicket) {
@@ -46,31 +47,22 @@ public class BarEnterController{
             System.out.println("Pobieram nowy bilet");
             try {
                 Ticket newTicket = TicketDAO.getNewTicket();
-                String newInfo = "Twój nr biletu to " + newTicket.getTicketNo();
-                String newInfo2 = "\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0, 19);
-                String newInfo3 = "\nMasz 60sek na wjazd";
 
-                System.out.print(newInfo);
-                System.out.print(newInfo2);
-                System.out.print(newInfo3);
-                System.out.println("");
-                setInfoToTextArea(newInfo + newInfo2 + newInfo3);
-                resultArea.appendText("\n==============\n");
-                resultArea.appendText("Your ticketNo is " + newTicket.getTicketNo() +"\n");
-                resultArea.appendText("Entry time " + newTicket.getEntryTime().toString().substring(0, 19) + "\n");
-                resultArea.appendText("You have 60sec for entry\n");
                 //set up ticket
-                printingArea.setFont(Font.font(8));
-                printingArea.setPrefColumnCount(20);
-                printingArea.setPrefRowCount(7);
+                printingArea.setFont(Font.font(6));
+                printingArea.setPrefColumnCount(25);
+                printingArea.setPrefRowCount(12);
                 //set ticket info
                 printingArea.setText("********* Parking javaPark *********");
                 printingArea.appendText("\n======================");
-                printingArea.appendText("\nTwój nr biletu to " + newTicket.getTicketNo());
-                printingArea.appendText("\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0, 19));
+                printingArea.appendText("\nNr biletu / TicketNo " + newTicket.getTicketNo());
+                printingArea.appendText("\nCzas wjazdu / Entry Time" + newTicket.getEntryTime().toString().substring(0, 19));
                 printingArea.appendText("\n======================");
                 printingArea.appendText("\nZachowaj ten bilet");
                 printingArea.appendText("\nPrzed wyjazdem opłać w automacie");
+                printingArea.appendText("\nKeep this ticket");
+                printingArea.appendText("\nPay in ticket machine, before leaving");
+                printingArea.appendText(("\n"));
 
                 //Print ticket
                 if(print(printingArea)) {
@@ -80,6 +72,20 @@ public class BarEnterController{
                     //run thread to check for bar status
                     barChecker = new Bar();
                     barChecker.start();
+
+                    String newInfo = "Twój nr biletu to " + newTicket.getTicketNo();
+                    String newInfo2 = "\nCzas wjazdu " + newTicket.getEntryTime().toString().substring(0, 19);
+                    String newInfo3 = "\nMasz 60sek na wjazd";
+
+                    System.out.print(newInfo);
+                    System.out.print(newInfo2);
+                    System.out.print(newInfo3);
+                    System.out.println("");
+                    setInfoToTextArea(newInfo + newInfo2 + newInfo3);
+                    resultArea.appendText("\n==============\n");
+                    resultArea.appendText("Your ticketNo is " + newTicket.getTicketNo() +"\n");
+                    resultArea.appendText("Entry time " + newTicket.getEntryTime().toString().substring(0, 19) + "\n");
+                    resultArea.appendText("You have 60sec for entry\n");
                 }
             } catch (SQLException e) {
                 System.out.println("Error occurred while getting new ticket from DB.\n" + e);
@@ -114,7 +120,7 @@ public class BarEnterController{
             }
             else{
                 // Write Error Message
-                resultArea.appendText("\nAwaria drukarki\nSkontaktuj się z administratorem");
+                resultArea.setText("Awaria drukarki\nSkontaktuj się z administratorem");
                 resultArea.appendText("\n======================");
                 resultArea.appendText("\nPrinting failed.\nThe printer is damaged\nPlease contact with administrator");
                 return false;
@@ -122,7 +128,7 @@ public class BarEnterController{
         }
         else{
             // Write Error Message
-            resultArea.appendText("\nDrukowanie nieudane.\nBrak drukarki.\nSkontaktuj się z administratorem.");
+            resultArea.setText("Drukowanie nieudane.\nBrak drukarki.\nSkontaktuj się z administratorem.");
             resultArea.appendText("\n======================");
             resultArea.appendText("\nPrinting failed.\nThere is no printer");
             return false;
